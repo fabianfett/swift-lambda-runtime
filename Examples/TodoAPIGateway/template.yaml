@@ -1,0 +1,161 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-app
+
+  Sample SAM Template for sam-app
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+
+  SwiftLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: ../../Layer/swift-lambda-runtime/
+      # ContentUri:
+      #   Bucket: de.fabianfett.swift-lambda-runtimes
+      #   Key: swift-lambda-runtime.zip
+      
+  DynamoDbFailedLoginsTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: ListId
+        AttributeType: S
+      - AttributeName: TodoId
+        AttributeType: S
+      KeySchema:
+      - AttributeName: ListId
+        KeyType: HASH
+      - AttributeName: TodoId
+        KeyType: RANGE
+      TableName: "SwiftLambdaTodos"
+      
+  APIGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: test
+      Cors:
+        AllowMethods: "'OPTIONS,GET,POST,DELETE,PATCH'"
+        AllowHeaders: "'Content-Type'"
+        AllowOrigin : "'*'"
+        AllowCredentials: "'*'"
+
+  TodoAPIGatewayListFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "TodoAPIGateway.list"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName: "SwiftLambdaTodos"
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref APIGateway
+            Path: /todos
+            Method: GET
+
+  TodoAPIGatewayCreateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "TodoAPIGateway.create"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: "SwiftLambdaTodos"
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref APIGateway
+            Path: /todos
+            Method: POST
+
+  TodoAPIGatewayDeleteAllFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "TodoAPIGateway.deleteAll"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: "SwiftLambdaTodos"
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref APIGateway
+            Path: /todos
+            Method: DELETE
+
+  TodoAPIGatewayGetTodo:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "TodoAPIGateway.getTodo"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Policies:
+      - DynamoDBReadPolicy:
+          TableName: "SwiftLambdaTodos"
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref APIGateway
+            Path: /todos/{id}
+            Method: GET
+
+  TodoAPIGatewayDeleteTodo:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "TodoAPIGateway.deleteTodo"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: "SwiftLambdaTodos"
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref APIGateway
+            Path: /todos/{id}
+            Method: DELETE
+
+  TodoAPIGatewayPatchTodo:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "TodoAPIGateway.patchTodo"
+      Runtime: provided
+      Layers:
+        - !Ref SwiftLayer
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: "SwiftLambdaTodos"
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref APIGateway
+            Path: /todos/{id}
+            Method: PATCH
