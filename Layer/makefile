@@ -8,7 +8,59 @@ clean_layer:
 	rm $(LAYER_ZIP) || true
 	rm -r $(SHARED_LIBS_FOLDER) || true
 
-create_layer: clean_layer
+create_layer_folders: clean_layer
+	mkdir -p $(LAYER_FOLDER)
+	mkdir -p $(SHARED_LIBS_FOLDER)/lib
+	cp ./bootstrap "$(LAYER_FOLDER)/bootstrap"
+	chmod 755 "$(LAYER_FOLDER)/bootstrap"
+
+create_thin_layer: create_layer_folders
+	docker run \
+		--rm \
+		--volume "$(shell pwd)/:/src" \
+		--workdir "/src" \
+		$(SWIFT_DOCKER_IMAGE) \
+		cp /lib64/ld-linux-x86-64.so.2 $(SHARED_LIBS_FOLDER)
+	docker run \
+			--rm \
+			--volume "$(shell pwd)/:/src" \
+			--workdir "/src" \
+			$(SWIFT_DOCKER_IMAGE) \
+			cp -t $(SHARED_LIBS_FOLDER)/lib \
+					/lib/x86_64-linux-gnu/libbsd.so.0 \
+					/lib/x86_64-linux-gnu/libc.so.6 \
+					/lib/x86_64-linux-gnu/libcom_err.so.2 \
+					/lib/x86_64-linux-gnu/libcrypt.so.1 \
+					/lib/x86_64-linux-gnu/libdl.so.2 \
+					/lib/x86_64-linux-gnu/libgcc_s.so.1 \
+					/lib/x86_64-linux-gnu/libm.so.6 \
+					/lib/x86_64-linux-gnu/libpthread.so.0 \
+					/lib/x86_64-linux-gnu/librt.so.1 \
+					/lib/x86_64-linux-gnu/libutil.so.1 \
+					/lib/x86_64-linux-gnu/libz.so.1 \
+					/usr/lib/swift/linux/libBlocksRuntime.so \
+					/usr/lib/swift/linux/libFoundation.so \
+					/usr/lib/swift/linux/libFoundationXML.so \
+					/usr/lib/swift/linux/libdispatch.so \
+					/usr/lib/swift/linux/libicudataswift.so.61 \
+					/usr/lib/swift/linux/libicui18nswift.so.61 \
+					/usr/lib/swift/linux/libicuucswift.so.61 \
+					/usr/lib/swift/linux/libswiftCore.so \
+					/usr/lib/swift/linux/libswiftDispatch.so \
+					/usr/lib/swift/linux/libswiftGlibc.so \
+					/usr/lib/swift/linux/libswiftSwiftOnoneSupport.so \
+					/usr/lib/x86_64-linux-gnu/libatomic.so.1 \
+					/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 \
+					/usr/lib/x86_64-linux-gnu/libicudata.so.60 \
+					/usr/lib/x86_64-linux-gnu/libicuuc.so.60 \
+					/usr/lib/x86_64-linux-gnu/libidn2.so.0 \
+					/usr/lib/x86_64-linux-gnu/libssl.so.1.1 \
+					/usr/lib/x86_64-linux-gnu/libstdc++.so.6 \
+					/usr/lib/x86_64-linux-gnu/libunistring.so.2 \
+					/usr/lib/x86_64-linux-gnu/libwind.so.0 \
+					/usr/lib/x86_64-linux-gnu/libxml2.so.2
+
+create_layer: create_layer_folders
 	mkdir -p $(LAYER_FOLDER)
 	mkdir -p $(SHARED_LIBS_FOLDER)/lib
 	cp ./bootstrap "$(LAYER_FOLDER)/bootstrap"
