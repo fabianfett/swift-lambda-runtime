@@ -1,0 +1,275 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  SwiftLayer:
+    Type: String
+    Description: The arn of the swift layer.
+    Default: arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+
+  # --- VPC
+
+  VPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      Tags:
+      - Key: Name
+        Value: "Test-VPC"
+
+  PublicSubnetCentralA:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: eu-central-1a
+      CidrBlock: 10.0.0.0/24
+      VpcId: !Ref VPC
+
+  PublicSubnetCentralB:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: eu-central-1b
+      CidrBlock: 10.0.10.0/24
+      VpcId: !Ref VPC
+
+  InternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+
+  InternetGatewayAttachToVPC:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  PublicRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: !Ref VPC
+
+  InternetRouteForPublicSubnets:
+    Type: "AWS::EC2::Route"
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetCentralARouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnetCentralA
+
+  PublicSubnetCentralBRouteTableAssociation:
+    Type: "AWS::EC2::SubnetRouteTableAssociation"
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnetCentralB
+
+  # --- cloudwatch schedule
+  
+  ConsumeCloudwatchScheduleLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "schedule"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Events:
+        schedule:
+          Type: Schedule
+          Properties:
+            Schedule: rate(5 minutes)
+            Enabled: True
+      
+  # --- sns
+
+  SNSTopic:
+    Type: AWS::SNS::Topic
+
+  ConsumeSNSTopicLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "sns"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Policies:
+      - SNSCrudPolicy:
+          TopicName: !GetAtt SNSTopic.TopicName
+      Events:
+        sns:
+          Type: SNS
+          Properties:
+            Topic: !Ref SNSTopic
+            
+  # --- sqs
+            
+  SQSQueue:
+    Type: AWS::SQS::Queue
+            
+  ConsumeSQSQueueLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "sqs"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Policies:
+      - SQSPollerPolicy:
+          QueueName: !GetAtt SQSQueue.QueueName
+      Events:
+        sqs:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SQSQueue.Arn
+            BatchSize: 10
+            Enabled: true
+        
+  # --- dynamo
+
+  EventSourcesTestTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+      - AttributeName: ListId
+        AttributeType: S
+      - AttributeName: TodoId
+        AttributeType: S
+      KeySchema:
+      - AttributeName: ListId
+        KeyType: HASH
+      - AttributeName: TodoId
+        KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: "EventSourcesTestTable"
+
+  ConsumeDynamoDBStreamLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "dynamo"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Policies:
+      - SQSPollerPolicy:
+          QueueName: !GetAtt SQSQueue.QueueName
+      Events:
+        dynamo:
+          Type: DynamoDB
+          Properties:
+            Stream: !GetAtt EventSourcesTestTable.StreamArn
+            StartingPosition: TRIM_HORIZON
+            BatchSize: 10
+            MaximumBatchingWindowInSeconds: 10
+            Enabled: true
+            ParallelizationFactor: 8
+            MaximumRetryAttempts: 100
+            BisectBatchOnFunctionError: true
+            MaximumRecordAgeInSeconds: 86400
+
+  # --- api
+  
+  HandleAPIRequestLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "api"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Events:
+        api:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+
+  # --- load balancer
+
+  HandleLoadBalancerLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "loadbalancer"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+
+  HandleLoadBalancerLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt HandleLoadBalancerLambda.Arn
+      Action: lambda:InvokeFunction
+      Principal: elasticloadbalancing.amazonaws.com
+
+  TestLoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: External ELB Security Group
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 80
+          ToPort: 80
+          IpProtocol: tcp
+        - CidrIp: 0.0.0.0/0
+          FromPort: 443
+          ToPort: 443
+          IpProtocol: tcp
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+      VpcId: !Ref VPC
+
+  TestLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties: 
+      Scheme: internet-facing
+      Type: application
+      Subnets:
+        - !Ref PublicSubnetCentralA
+        - !Ref PublicSubnetCentralB
+      SecurityGroups:
+        - !Ref TestLoadBalancerSecurityGroup
+
+  TestLoadBalancerListener:
+    Type: "AWS::ElasticLoadBalancingV2::Listener"
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TestLoadBalancerTargetGroup
+      LoadBalancerArn: !Ref TestLoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  TestLoadBalancerTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    DependsOn:
+    - HandleLoadBalancerLambdaInvokePermission
+    Properties: 
+      Name: EinSternDerDeinenNamenTraegt
+      Targets: 
+        - Id: !GetAtt HandleLoadBalancerLambda.Arn
+      TargetGroupAttributes:
+        - Key: lambda.multi_value_headers.enabled
+          Value: true
+      TargetType: lambda
+
+      
+
+
+
+

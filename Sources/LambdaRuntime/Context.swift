@@ -18,8 +18,9 @@ public class Context {
 
   public init(environment: Environment, invocation: Invocation, eventLoop: EventLoop) {
     
-    var logger        = Logger(label: "aws.lambda.swift.request-logger")
+    var logger        = Logger(label: "AWSLambda.request-logger")
     logger[metadataKey: "RequestId"] = .string(invocation.requestId)
+    logger[metadataKey: "TraceId"  ] = .string(invocation.traceId)
     
     self.environment  = environment
     self.invocation   = invocation

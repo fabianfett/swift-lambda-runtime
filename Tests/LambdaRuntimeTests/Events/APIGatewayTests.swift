@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Fabian Fett on 03.11.19.
-//
-
 import Foundation
 import XCTest
 import NIO
@@ -71,7 +64,7 @@ class APIGatewayTests: XCTestCase {
       let request = try JSONDecoder().decode(APIGateway.Request.self, from: data)
       
       XCTAssertEqual(request.path, "/test")
-      XCTAssertEqual(request.httpMethod, "GET")
+      XCTAssertEqual(request.httpMethod, .GET)
     }
     catch {
       XCTFail("Unexpected error: \(error)")
@@ -89,9 +82,9 @@ class APIGatewayTests: XCTestCase {
       let request = try JSONDecoder().decode(APIGateway.Request.self, from: data)
       
       XCTAssertEqual(request.path, "/todos")
-      XCTAssertEqual(request.httpMethod, "POST")
+      XCTAssertEqual(request.httpMethod, .POST)
       
-      let todo: Todo = try request.payload()
+      let todo = try request.payload(Todo.self)
       XCTAssertEqual(todo.title, "a todo")
     }
     catch {

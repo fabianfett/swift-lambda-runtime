@@ -2,13 +2,14 @@ import Foundation
 import NIOFoundationCompat
 import NIO
 import NIOHTTP1
+import Base64Kit
 
 // https://github.com/aws/aws-lambda-go/blob/master/events/apigw.go
 
 public struct APIGateway {
   
-  // https://github.com/aws/aws-lambda-go/blob/master/events/apigw.go
-  public struct Request: Codable {
+  /// APIGatewayRequest contains data coming from the API Gateway
+  public struct Request {
     
     public struct Context: Codable {
       
@@ -42,12 +43,11 @@ public struct APIGateway {
     
     public let resource: String
     public let path: String
-    public let httpMethod: String
+    public let httpMethod: HTTPMethod
     
-    public let queryStringParameters: String?
+    public let queryStringParameters: [String: String]?
     public let multiValueQueryStringParameters: [String:[String]]?
-    public let headers: [String: String]?
-    public let multiValueHeaders: [String: [String]]?
+    public let headers: HTTPHeaders
     public let pathParameters: [String:String]?
     public let stageVariables: [String:String]?
     
@@ -82,11 +82,13 @@ public struct APIGateway {
 extension APIGateway {
   
   public static func handler(
-    decoder: JSONDecoder = JSONDecoder(),
-    encoder: JSONEncoder = JSONEncoder(),
     _ handler: @escaping (APIGateway.Request, Context) -> EventLoopFuture<APIGateway.Response>)
     -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer?>)
   {
+    // reuse as much as possible
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
+    
     return { (inputBytes: NIO.ByteBuffer, ctx: Context) -> EventLoopFuture<ByteBuffer?> in
       
       let req: APIGateway.Request
@@ -111,9 +113,56 @@ extension APIGateway {
 
 // MARK: - Request -
 
+extension APIGateway.Request: Decodable {
+  
+  enum CodingKeys: String, CodingKey {
+    
+    case resource                        = "resource"
+    case path                            = "path"
+    case httpMethod                      = "httpMethod"
+    
+    case queryStringParameters           = "queryStringParameters"
+    case multiValueQueryStringParameters = "multiValueQueryStringParameters"
+    case headers                         = "headers"
+    case multiValueHeaders               = "multiValueHeaders"
+    case pathParameters                  = "pathParameters"
+    case stageVariables                  = "stageVariables"
+    
+    case requestContext                  = "requestContext"
+    case body                            = "body"
+    case isBase64Encoded                 = "isBase64Encoded"
+  }
+  
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    
+    let method = try container.decode(String.self, forKey: .httpMethod)
+    self.httpMethod = HTTPMethod(rawValue: method)
+    self.path = try container.decode(String.self, forKey: .path)
+    self.resource = try container.decode(String.self, forKey: .resource)
+    
+    self.queryStringParameters = try container.decodeIfPresent(
+      [String: String].self,
+      forKey: .queryStringParameters)
+    self.multiValueQueryStringParameters = try container.decodeIfPresent(
+      [String: [String]].self,
+      forKey: .multiValueQueryStringParameters)
+    
+    let awsHeaders = try container.decode([String: [String]].self, forKey: .multiValueHeaders)
+    self.headers   = HTTPHeaders(awsHeaders: awsHeaders)
+    
+    self.pathParameters =  try container.decodeIfPresent([String:String].self, forKey: .pathParameters)
+    self.stageVariables =  try container.decodeIfPresent([String:String].self, forKey: .stageVariables)
+    
+    self.requestContext  = try container.decode(Context.self, forKey: .requestContext)
+    self.isBase64Encoded = try container.decode(Bool.self, forKey: .isBase64Encoded)
+    self.body            = try container.decodeIfPresent(String.self, forKey: .body)
+  }
+}
+
 extension APIGateway.Request {
   
-  public func payload<Payload: Decodable>(decoder: JSONDecoder = JSONDecoder()) throws -> Payload {
+  public func payload<Payload: Decodable>(_ type: Payload.Type, decoder: JSONDecoder = JSONDecoder()) throws -> Payload {
     let body = self.body ?? ""
         
     let capacity = body.lengthOfBytes(using: .utf8)
@@ -189,7 +238,6 @@ extension APIGateway.Response {
     self.isBase64Encoded = false
   }
   
-  #if false
   /// Use this method to send any arbitrary byte buffer back to the API Gateway.
   /// Sadly Apple currently doesn't seem to be confident enough to advertise
   /// their base64 implementation publically. SAD. SO SAD. Therefore no
@@ -199,15 +247,14 @@ extension APIGateway.Response {
     headers   : HTTPHeaders? = nil,
     buffer    : NIO.ByteBuffer)
   {
-    var headers = headers ?? HTTPHeaders()
-    headers.add(name: "Content-Type", value: "application/json")
+    let headers = headers ?? HTTPHeaders()
     
     self.statusCode = statusCode
     self.headers    = headers
-    
-    self.body       = String(base64Encoding: buffer.getBytes(at: 0, length: buffer.readableBytes))
+    self.body       = buffer.withUnsafeReadableBytes { (ptr) -> String in
+      return String(base64Encoding: ptr)
+    }
     self.isBase64Encoded = true
   }
-  #endif
   
 }
