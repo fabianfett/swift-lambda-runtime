@@ -47,6 +47,15 @@
         }
       },
       {
+        "package": "swift-base64-kit",
+        "repositoryURL": "https://github.com/fabianfett/swift-base64-kit.git",
+        "state": {
+          "branch": null,
+          "revision": "3ffa48a7047fc9ac6581cd53ab1df29466d8f13b",
+          "version": "0.2.0"
+        }
+      },
+      {
         "package": "swift-log",
         "repositoryURL": "https://github.com/apple/swift-log.git",
         "state": {

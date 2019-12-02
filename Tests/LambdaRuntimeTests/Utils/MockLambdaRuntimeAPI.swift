@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Fabian Fett on 11.11.19.
-//
-
 import Foundation
 import NIO
 @testable import LambdaRuntime

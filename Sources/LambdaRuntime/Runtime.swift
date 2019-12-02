@@ -50,7 +50,6 @@ final public class LambdaRuntime {
        environment: Environment,
        handler: @escaping Handler)
   {
-    
     self.eventLoopGroup = eventLoopGroup
     self.runtimeLoop    = eventLoopGroup.next()
     
@@ -93,7 +92,8 @@ final public class LambdaRuntime {
     _ = self.client.getNextInvocation()
       .hop(to: self.runtimeLoop)
       .flatMap { (invocation, byteBuffer) -> EventLoopFuture<Void> in
-          
+        
+        // TBD: Does it make sense to also set this env variable?
         setenv("_X_AMZN_TRACE_ID", invocation.traceId, 0)
         
         let context = Context(
