@@ -35,8 +35,8 @@ class RuntimeCodableTests: XCTestCase {
       let inputBytes = try JSONEncoder().encodeAsByteBuffer(TestRequest(name: "world"), allocator: ByteBufferAllocator())
       let ctx = try Context(environment: .forTesting(), invocation: .forTesting(), eventLoop: eventLoopGroup.next())
       
-      let response = try handler(inputBytes, ctx).flatMapThrowing { (outputBytes) -> TestResponse in
-        return try JSONDecoder().decode(TestResponse.self, from: outputBytes)
+      let response = try handler(inputBytes, ctx).flatMapThrowing { (bytes) -> TestResponse in
+        return try JSONDecoder().decode(TestResponse.self, from: bytes!)
       }.wait()
       
       XCTAssertEqual(response, TestResponse(greeting: "Hello world!"))
@@ -62,7 +62,7 @@ class RuntimeCodableTests: XCTestCase {
       
       _ = try handler(inputBytes, ctx).flatMapThrowing { (outputBytes) -> TestResponse in
         XCTFail("The function should not be invoked.")
-        return try JSONDecoder().decode(TestResponse.self, from: outputBytes)
+        return try JSONDecoder().decode(TestResponse.self, from: outputBytes!)
       }.wait()
       
       XCTFail("Did not expect to succeed.")
@@ -161,8 +161,8 @@ class RuntimeCodableTests: XCTestCase {
       let inputBytes = try JSONEncoder().encodeAsByteBuffer(TestRequest(name: "world"), allocator: ByteBufferAllocator())
       let ctx = try Context(environment: .forTesting(), invocation: .forTesting(), eventLoop: eventLoopGroup.next())
       
-      let response = try handler(inputBytes, ctx).flatMapThrowing { (outputBytes) -> TestResponse in
-        return try JSONDecoder().decode(TestResponse.self, from: outputBytes)
+      let response = try handler(inputBytes, ctx).flatMapThrowing { (bytes) -> TestResponse in
+        return try JSONDecoder().decode(TestResponse.self, from: bytes!)
       }.wait()
       
       XCTAssertEqual(response, TestResponse(greeting: "Hello world!"))
