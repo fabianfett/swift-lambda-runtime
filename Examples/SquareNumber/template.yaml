@@ -27,11 +27,15 @@ Resources:
       Handler: "SquareNumber.squareNumber"
       Runtime: provided
       Layers:
-        - !Ref SwiftLayer
-      Events:
-        HelloWorld:
-          Type: Api
-          Properties:
-            Path: /hello
-            Method: get
-  
+      - !Ref SwiftLayer
+
+  PrintNumberFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: Examples/SquareNumber/lambda.zip
+      Handler: "SquareNumber.printNumber"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+
+

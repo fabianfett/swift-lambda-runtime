@@ -66,7 +66,7 @@ class RuntimeTests: XCTestCase {
     }
   }
   
-  func testCreateRuntimeMissingHanlder() {
+  func testCreateRuntimeMissingHandler() {
     setenv("AWS_LAMBDA_RUNTIME_API", "localhost", 1)
     unsetenv("_HANDLER")
     

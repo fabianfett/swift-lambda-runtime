@@ -48,7 +48,7 @@ extension MockLambdaRuntimeAPI: LambdaRuntimeAPI {
     }
   }
   
-  func postInvocationResponse(for requestId: String, httpBody: ByteBuffer) -> EventLoopFuture<Void> {
+  func postInvocationResponse(for requestId: String, httpBody: ByteBuffer?) -> EventLoopFuture<Void> {
     return self.runLoop.makeSucceededFuture(Void())
   }
   

@@ -10,6 +10,4 @@ enum RuntimeError: Error, Equatable {
   case unknownLambdaHandler(String)
   
   case endpointError(String)
-
-  
 }

@@ -7,9 +7,9 @@ extension Runtime {
   /// wrapper to use for the register function that wraps the encoding and decoding
   public static func codable<Event: Decodable, Result: Encodable>(
     _ handler: @escaping (Event, Context) -> EventLoopFuture<Result>)
-    -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer>)
+    -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer?>)
   {
-    return { (inputBytes: NIO.ByteBuffer, ctx: Context) -> EventLoopFuture<ByteBuffer> in
+    return { (inputBytes: NIO.ByteBuffer, ctx: Context) -> EventLoopFuture<ByteBuffer?> in
       let input: Event
       do {
         input = try JSONDecoder().decode(Event.self, from: inputBytes)
@@ -25,10 +25,27 @@ extension Runtime {
     }
   }
   
+  public static func codable<Event: Decodable>(
+    _ handler: @escaping (Event, Context) -> EventLoopFuture<Void>)
+    -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer?>)
+  {
+    return { (inputBytes: NIO.ByteBuffer, ctx: Context) -> EventLoopFuture<ByteBuffer?> in
+      let input: Event
+      do {
+        input = try JSONDecoder().decode(Event.self, from: inputBytes)
+      }
+      catch {
+        return ctx.eventLoop.makeFailedFuture(error)
+      }
+      
+      return handler(input, ctx).map { return nil }
+    }
+  }
+  
   /// synchronous interface to use with codable
   public static func codable<Event: Decodable, Result: Encodable>(
     _ handler: @escaping (Event, Context) throws -> (Result))
-    -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer>)
+    -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer?>)
   {
     return Runtime.codable { (event: Event, context) -> EventLoopFuture<Result> in
       let promise = context.eventLoop.makePromise(of: Result.self)

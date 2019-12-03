@@ -66,7 +66,7 @@ final public class Runtime {
   }
   
   
-  public typealias Handler = (NIO.ByteBuffer, Context) -> EventLoopFuture<NIO.ByteBuffer>
+  public typealias Handler = (NIO.ByteBuffer, Context) -> EventLoopFuture<NIO.ByteBuffer?>
   
   /// Registers a handler function for execution by the runtime. This method is
   /// not thread safe. Therefore it is only safe to invoke this function before
@@ -118,6 +118,12 @@ final public class Runtime {
         
         guard let handler = self.handlers[self.handlerName] else {
           return self.runtimeLoop.makeFailedFuture(RuntimeError.unknownLambdaHandler(self.handlerName))
+            .flatMapError { (error) -> EventLoopFuture<Void> in
+              return self.client.postInvocationError(for: context.requestId, error: error)
+            }
+            .flatMapErrorThrowing { (error) in
+              context.logger.error("Could not post lambda result to runtime. error: \(error)")
+            }
         }
         
         return handler(byteBuffer, context)
@@ -144,4 +150,3 @@ final public class Runtime {
       }
   }
 }
-
