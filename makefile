@@ -25,5 +25,5 @@ deploy_lambda: package_lambda
 	aws lambda update-function-code --function-name $(EXAMPLE_LAMBDA) --zip-file fileb://$(LAMBDA_ZIP)
 	
 test_lambda: package_lambda
-	echo '{"number": 9 }' | sam local invoke --template $(EXAMPLE_PROJECT_PATH)/template.yaml --force-image-build -v . "SquareNumberFunction"
-
+	echo '{"number": 3 }' | sam local invoke --template $(EXAMPLE_PROJECT_PATH)/template.yaml -v . "PrintNumberFunction"
+	echo '{"number": 9 }' | sam local invoke --template $(EXAMPLE_PROJECT_PATH)/template.yaml -v . "SquareNumberFunction"

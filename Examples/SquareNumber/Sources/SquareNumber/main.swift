@@ -14,6 +14,11 @@ func squareNumber(input: Input, context: Context) -> Output {
   return Output(result: squaredNumber)
 }
 
+func printNumber(input: Input, context: Context) -> EventLoopFuture<Void> {
+  context.logger.info("Number is: \(input.number)")
+  return context.eventLoop.makeSucceededFuture(Void())
+}
+
 let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
 defer {
   try! group.syncShutdownGracefully()
@@ -24,6 +29,7 @@ do {
   defer { try! runtime.syncShutdown() }
   
   runtime.register(for: "squareNumber", handler: Runtime.codable(squareNumber))
+  runtime.register(for: "printNumber",  handler: Runtime.codable(printNumber))
   try runtime.start().wait()
 }
 catch {

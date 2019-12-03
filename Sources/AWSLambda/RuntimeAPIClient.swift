@@ -86,7 +86,7 @@ extension RuntimeAPIClient: LambdaRuntimeAPI {
         guard let data = response.body else {
           throw RuntimeError.invocationMissingData
         }
-          
+
         return (try Invocation(headers: response.headers), data)
       }
   }
