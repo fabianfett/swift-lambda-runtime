@@ -51,7 +51,7 @@ public struct Invocation {
 protocol LambdaRuntimeAPI {
   
   func getNextInvocation() -> EventLoopFuture<(Invocation, NIO.ByteBuffer)>
-  func postInvocationResponse(for requestId: String, httpBody: NIO.ByteBuffer) -> EventLoopFuture<Void>
+  func postInvocationResponse(for requestId: String, httpBody: NIO.ByteBuffer?) -> EventLoopFuture<Void>
   func postInvocationError(for requestId: String, error: Error) -> EventLoopFuture<Void>
   
   func syncShutdown() throws
@@ -91,9 +91,10 @@ extension RuntimeAPIClient: LambdaRuntimeAPI {
       }
   }
 
-  func postInvocationResponse(for requestId: String, httpBody: NIO.ByteBuffer) -> EventLoopFuture<Void> {
+  func postInvocationResponse(for requestId: String, httpBody: NIO.ByteBuffer?) -> EventLoopFuture<Void> {
     let url = "http://\(lambdaRuntimeAPI)/2018-06-01/runtime/invocation/\(requestId)/response"
-    return self.httpClient.post(url: url, body: .byteBuffer(httpBody))
+    let body = httpBody != nil ? HTTPClient.Body.byteBuffer(httpBody!) : nil
+    return self.httpClient.post(url: url, body: body)
       .map { (_) -> Void in }
   }
 

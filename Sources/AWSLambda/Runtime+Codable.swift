@@ -25,6 +25,23 @@ extension Runtime {
     }
   }
   
+  public static func codable<Event: Decodable>(
+    _ handler: @escaping (Event, Context) -> EventLoopFuture<Void>)
+    -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer?>)
+  {
+    return { (inputBytes: NIO.ByteBuffer, ctx: Context) -> EventLoopFuture<ByteBuffer?> in
+      let input: Event
+      do {
+        input = try JSONDecoder().decode(Event.self, from: inputBytes)
+      }
+      catch {
+        return ctx.eventLoop.makeFailedFuture(error)
+      }
+      
+      return handler(input, ctx).map { return nil }
+    }
+  }
+  
   /// synchronous interface to use with codable
   public static func codable<Event: Decodable, Result: Encodable>(
     _ handler: @escaping (Event, Context) throws -> (Result))

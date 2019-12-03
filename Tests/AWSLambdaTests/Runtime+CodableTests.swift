@@ -22,7 +22,7 @@ class RuntimeCodableTests: XCTestCase {
     let greeting: String
   }
   
-  func testHappyPath() {
+  func testCodableHandlerWithResultSuccess() {
     let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
@@ -46,7 +46,7 @@ class RuntimeCodableTests: XCTestCase {
     }
   }
   
-  func testInvalidJSONInput() {
+  func testCodableHandlerWithResultInvalidInput() {
     let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
@@ -75,7 +75,80 @@ class RuntimeCodableTests: XCTestCase {
     }
   }
   
-  func testSynchronousCodableInterface() {
+  func testCodableHandlerWithoutResultSuccess() {
+    let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
+    defer {
+        XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
+    }
+    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
+      return ctx.eventLoop.makeSucceededFuture(Void())
+    }
+    
+    do {
+      let inputBytes = try JSONEncoder().encodeAsByteBuffer(TestRequest(name: "world"), allocator: ByteBufferAllocator())
+      let ctx = try Context(environment: .forTesting(), invocation: .forTesting(), eventLoop: eventLoopGroup.next())
+      
+      _ = try handler(inputBytes, ctx).wait()
+    }
+    catch {
+      XCTFail("Unexpected error: \(error)")
+    }
+  }
+  
+  func testCodableHandlerWithoutResultInvalidInput() {
+    let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
+    defer {
+        XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
+    }
+    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
+      return ctx.eventLoop.makeSucceededFuture(Void())
+    }
+    
+    do {
+      var inputBytes = try JSONEncoder().encodeAsByteBuffer(TestRequest(name: "world"), allocator: ByteBufferAllocator())
+      inputBytes.setString("asd", at: 0) // destroy the json
+      let ctx = try Context(environment: .forTesting(), invocation: .forTesting(), eventLoop: eventLoopGroup.next())
+      
+      _ = try handler(inputBytes, ctx).wait()
+      
+      XCTFail("Did not expect to succeed.")
+    }
+    catch DecodingError.dataCorrupted(_) {
+      // this is our expected case
+    }
+    catch {
+      XCTFail("Unexpected error: \(error)")
+    }
+  }
+  
+  func testCodableHandlerWithoutResultFailure() {
+    let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
+    defer {
+        XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
+    }
+    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
+      return ctx.eventLoop.makeFailedFuture(RuntimeError.unknown)
+    }
+    
+    do {
+      let inputBytes = try JSONEncoder().encodeAsByteBuffer(TestRequest(name: "world"), allocator: ByteBufferAllocator())
+      let ctx = try Context(environment: .forTesting(), invocation: .forTesting(), eventLoop: eventLoopGroup.next())
+      
+      _ = try handler(inputBytes, ctx).wait()
+      
+      XCTFail("Did not expect to reach this point")
+    }
+    catch RuntimeError.unknown {
+      // expected case
+    }
+    catch {
+      XCTFail("Unexpected error: \(error)")
+    }
+  }
+
+  // MARK: - Synchrounous Interface -
+  
+  func testSynchronousCodableInterfaceSuccess() {
     let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
