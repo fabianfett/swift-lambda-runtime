@@ -3,6 +3,6 @@ import NIO
 import XCTest
 @testable import TodoService
 
-final class TodoAPIGatewayTests: XCTestCase {
-
+final class DynamoTodoStoreTests: XCTestCase {
+  
 }

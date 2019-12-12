@@ -12,8 +12,12 @@ public struct Environment {
   public let memoryLimitInMB : String
   public let accessKeyId     : String
   public let secretAccessKey : String
-  public let sessionToken    : String
+  public let sessionToken    : String?
   public let region          : String
+  
+  public init() throws {
+    try self.init(ProcessInfo.processInfo.environment)
+  }
   
   init(_ env: [String: String]) throws {
     
@@ -21,15 +25,9 @@ public struct Environment {
       throw RuntimeError.missingEnvironmentVariable("AWS_LAMBDA_RUNTIME_API")
     }
     
-    guard let handler = env["_HANDLER"] else {
+    guard let handlerName = env["_HANDLER"] else {
       throw RuntimeError.missingEnvironmentVariable("_HANDLER")
     }
-
-    guard let periodIndex = handler.firstIndex(of: ".") else {
-      throw RuntimeError.invalidHandlerName
-    }
-
-    let handlerName = String(handler[handler.index(after: periodIndex)...])
     
     self.lambdaRuntimeAPI = awsLambdaRuntimeAPI
     self.handlerName      = handlerName
@@ -42,7 +40,7 @@ public struct Environment {
     
     self.accessKeyId      = env["AWS_ACCESS_KEY_ID"] ?? ""
     self.secretAccessKey  = env["AWS_SECRET_ACCESS_KEY"] ?? ""
-    self.sessionToken     = env["AWS_SESSION_TOKEN"] ?? ""
+    self.sessionToken     = env["AWS_SESSION_TOKEN"]
     
     self.region           = env["AWS_REGION"] ?? "us-east-1"
   }

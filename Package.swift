@@ -4,23 +4,24 @@
 import PackageDescription
 
 let package = Package(
-  name: "swift-aws-lambda",
+  name: "swift-lambda-runtime",
   products: [
     .library(
-      name: "AWSLambda",
-      targets: ["AWSLambda"]
+      name: "LambdaRuntime",
+      targets: ["LambdaRuntime"]
     ),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-nio.git", .upToNextMajor(from: "2.9.0")),
     .package(url: "https://github.com/apple/swift-log.git", .upToNextMajor(from: "1.1.1")),
-    .package(url: "https://github.com/swift-server/async-http-client.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/swift-server/async-http-client.git", .upToNextMajor(from: "1.0.0")),
+    .package(url: "https://github.com/fabianfett/swift-base64-kit.git", .upToNextMajor(from: "0.2.0")),
   ],
   targets: [
     .target(
-      name: "AWSLambda",
+      name: "LambdaRuntime",
       dependencies: ["AsyncHTTPClient", "NIO", "NIOHTTP1", "NIOFoundationCompat", "Logging"]
     ),
-    .testTarget(name: "AWSLambdaTests", dependencies: ["AWSLambda", "NIOTestUtils", "Logging"])
+    .testTarget(name: "LambdaRuntimeTests", dependencies: ["LambdaRuntime", "NIOTestUtils", "Logging"])
   ]
 )

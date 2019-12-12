@@ -12,14 +12,6 @@ Globals:
 
 Resources:
 
-  SwiftLayer:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      ContentUri: ../../Layer/swift-lambda-runtime/
-      # ContentUri:
-      #   Bucket: de.fabianfett.swift-lambda-runtimes
-      #   Key: swift-lambda-runtime.zip
-      
   DynamoDbFailedLoginsTable:
     Type: "AWS::DynamoDB::Table"
     Properties:
@@ -50,10 +42,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambda.zip
-      Handler: "TodoAPIGateway.list"
+      Handler: "list"
       Runtime: provided
       Layers:
-      - !Ref SwiftLayer
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBReadPolicy:
           TableName: "SwiftLambdaTodos"
@@ -69,10 +61,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambda.zip
-      Handler: "TodoAPIGateway.create"
+      Handler: "create"
       Runtime: provided
       Layers:
-      - !Ref SwiftLayer
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBCrudPolicy:
           TableName: "SwiftLambdaTodos"
@@ -88,10 +80,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambda.zip
-      Handler: "TodoAPIGateway.deleteAll"
+      Handler: "deleteAll"
       Runtime: provided
       Layers:
-      - !Ref SwiftLayer
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBCrudPolicy:
           TableName: "SwiftLambdaTodos"
@@ -107,10 +99,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambda.zip
-      Handler: "TodoAPIGateway.getTodo"
+      Handler: "getTodo"
       Runtime: provided
       Layers:
-      - !Ref SwiftLayer
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBReadPolicy:
           TableName: "SwiftLambdaTodos"
@@ -126,10 +118,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambda.zip
-      Handler: "TodoAPIGateway.deleteTodo"
+      Handler: "deleteTodo"
       Runtime: provided
       Layers:
-      - !Ref SwiftLayer
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBCrudPolicy:
           TableName: "SwiftLambdaTodos"
@@ -145,10 +137,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: lambda.zip
-      Handler: "TodoAPIGateway.patchTodo"
+      Handler: "patchTodo"
       Runtime: provided
       Layers:
-        - !Ref SwiftLayer
+        - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBCrudPolicy:
           TableName: "SwiftLambdaTodos"

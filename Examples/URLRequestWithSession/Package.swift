@@ -4,13 +4,13 @@
 import PackageDescription
 
 let package = Package(
-  name: "SquareNumber",
+  name: "URLRequestWithSession",
   dependencies: [
     .package(path: "../../"),
   ],
   targets: [
     .target(
-      name: "SquareNumber",
+      name: "URLRequestWithSession",
       dependencies: ["LambdaRuntime"]
     ),
   ]

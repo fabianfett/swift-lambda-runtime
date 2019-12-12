@@ -1,4 +1,4 @@
-import AWSLambda
+import LambdaRuntime
 import NIO
 import Logging
 import Foundation
@@ -10,12 +10,12 @@ LoggingSystem.bootstrap(StreamLogHandler.standardError)
 
 let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
 defer { try! group.syncShutdownGracefully() }
-let logger = Logger(label: "AWSLambda.TodoAPIGateway")
+let logger = Logger(label: "Lambda.TodoAPIGateway")
 
 do {
   logger.info("start runtime")
-  let runtime    = try Runtime.createRuntime(eventLoopGroup: group)
-  let env        = runtime.environment
+  
+  let env        = try Environment()
   let store      = DynamoTodoStore(
     eventLoopGroup:  group,
     tableName:       "SwiftLambdaTodos",
@@ -25,19 +25,30 @@ do {
     region:          Region(rawValue: env.region)!)
   let controller = TodoController(store: store)
   
-  defer { try! runtime.syncShutdown() }
-  
-  logger.info("register functions")
+  logger.info("register function")
 
-  runtime.register(for: "list", handler: APIGateway.handler(controller.listTodos))
-  runtime.register(for: "create", handler: APIGateway.handler(controller.createTodo))
-  runtime.register(for: "deleteAll", handler: APIGateway.handler(controller.deleteAll))
-  runtime.register(for: "getTodo", handler: APIGateway.handler(controller.getTodo))
-  runtime.register(for: "deleteTodo", handler: APIGateway.handler(controller.deleteTodo))
-  runtime.register(for: "patchTodo", handler: APIGateway.handler(controller.patchTodo))
+  let handler: LambdaRuntime.Handler
+  switch env.handlerName {
+  case "list":
+    handler = APIGateway.handler(controller.listTodos)
+  case "create":
+    handler = APIGateway.handler(controller.createTodo)
+  case "deleteAll":
+    handler = APIGateway.handler(controller.deleteAll)
+  case "getTodo":
+    handler = APIGateway.handler(controller.getTodo)
+  case "deleteTodo":
+    handler = APIGateway.handler(controller.deleteTodo)
+  case "patchTodo":
+    handler = APIGateway.handler(controller.patchTodo)
+  default:
+    fatalError("Unexpected handler")
+  }
   
   logger.info("starting runloop")
 
+  let runtime    = try LambdaRuntime.createRuntime(eventLoopGroup: group, environment: env, handler: handler)
+  defer { try! runtime.syncShutdown() }
   try runtime.start().wait()
 }
 catch {

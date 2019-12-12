@@ -1,7 +1,7 @@
 import Foundation
 import XCTest
 import NIO
-@testable import AWSLambda
+@testable import LambdaRuntime
 
 class ContextTests: XCTestCase {
   

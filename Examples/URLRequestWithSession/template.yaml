@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sam-app
+
+  Sample SAM Template for sam-app
+  
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+
+  EchoCallFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: Examples/URLRequestWithSession/lambda.zip
+      Handler: "echoCall"
+      Runtime: provided
+      Layers:
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
+
+
+

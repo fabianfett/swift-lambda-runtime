@@ -2,6 +2,6 @@
 .build
 /*.xcodeproj
 xcuserdata
-Layer/swift-lambda-runtime
-Layer/swift-lambda-runtime.zip
+Layer
 Examples/**/lambda.zip
+packaged.yaml

@@ -1,4 +1,5 @@
-import AWSLambda
+import Foundation
+import LambdaRuntime
 import NIO
 
 struct Input: Codable {
@@ -9,9 +10,9 @@ struct Output: Codable {
   let result: Double
 }
 
-func squareNumber(input: Input, context: Context) -> Output {
+func squareNumber(input: Input, context: Context) -> EventLoopFuture<Output> {
   let squaredNumber = input.number * input.number
-  return Output(result: squaredNumber)
+  return context.eventLoop.makeSucceededFuture(Output(result: squaredNumber))
 }
 
 func printNumber(input: Input, context: Context) -> EventLoopFuture<Void> {
@@ -25,11 +26,18 @@ defer {
 }
 
 do {
-  let runtime = try Runtime.createRuntime(eventLoopGroup: group)
+  
+  let handler: LambdaRuntime.Handler
+  switch ProcessInfo.processInfo.environment["_HANDLER"] {
+  case "printNumber":
+    handler = LambdaRuntime.codable(printNumber)
+  default:
+    handler = LambdaRuntime.codable(squareNumber)
+  }
+  
+  let runtime = try LambdaRuntime.createRuntime(eventLoopGroup: group, handler: handler)
   defer { try! runtime.syncShutdown() }
   
-  runtime.register(for: "squareNumber", handler: Runtime.codable(squareNumber))
-  runtime.register(for: "printNumber",  handler: Runtime.codable(printNumber))
   try runtime.start().wait()
 }
 catch {

@@ -10,7 +10,7 @@ import XCTest
 import NIO
 import NIOHTTP1
 import NIOFoundationCompat
-@testable import AWSLambda
+@testable import LambdaRuntime
 
 class APIGatewayTests: XCTestCase {
   
@@ -47,7 +47,10 @@ class APIGatewayTests: XCTestCase {
         return context.eventLoop.makeSucceededFuture(APIGateway.Response(statusCode: .ok))
       }
       
-      let result = try handler(testPayload, context).wait()
+      guard let result = try handler(testPayload, context).wait() else {
+        XCTFail("expected a payload")
+        return
+      }
       
       let response = try JSONDecoder().decode(JSONResponse.self, from: result)
       XCTAssertEqual(response.statusCode, 200)

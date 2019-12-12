@@ -1,7 +1,7 @@
 import Foundation
 import XCTest
 import NIO
-@testable import AWSLambda
+@testable import LambdaRuntime
 
 class RuntimeTests: XCTestCase {
   
@@ -10,36 +10,17 @@ class RuntimeTests: XCTestCase {
   func testCreateRuntimeHappyPath() {
     
     setenv("AWS_LAMBDA_RUNTIME_API", "localhost", 1)
-    setenv("_HANDLER", "BlaBla.testHandler", 1)
+    setenv("_HANDLER", "haha", 1)
     
     let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     defer { XCTAssertNoThrow(try group.syncShutdownGracefully()) }
     
     do {
-      let runtime = try Runtime.createRuntime(eventLoopGroup: group)
+      let runtime = try LambdaRuntime.createRuntime(eventLoopGroup: group) { (_, ctx) in
+        return ctx.eventLoop.makeSucceededFuture(nil)
+      }
       defer { XCTAssertNoThrow(try runtime.syncShutdown()) }
-      XCTAssertEqual(runtime.handlerName, "testHandler")
       XCTAssert(runtime.eventLoopGroup === group)
-    }
-    catch {
-      XCTFail("Unexpected error: \(error)")
-    }
-  }
-  
-  func testCreateRuntimeInvalidHandlerName() {
-    setenv("AWS_LAMBDA_RUNTIME_API", "localhost", 1)
-    setenv("_HANDLER", "testHandler", 1)
-    
-    let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
-    defer { XCTAssertNoThrow(try group.syncShutdownGracefully()) }
-    
-    do {
-      let runtime = try Runtime.createRuntime(eventLoopGroup: group)
-      defer { XCTAssertNoThrow(try runtime.syncShutdown()) }
-      XCTFail("Did not expect to succeed")
-    }
-    catch let error as RuntimeError {
-      XCTAssertEqual(error, RuntimeError.invalidHandlerName)
     }
     catch {
       XCTFail("Unexpected error: \(error)")
@@ -48,13 +29,14 @@ class RuntimeTests: XCTestCase {
 
   func testCreateRuntimeMissingLambdaRuntimeAPI() {
     unsetenv("AWS_LAMBDA_RUNTIME_API")
-    setenv("_HANDLER", "BlaBla.testHandler", 1)
-    
+
     let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
     defer { XCTAssertNoThrow(try group.syncShutdownGracefully()) }
     
     do {
-      let runtime = try Runtime.createRuntime(eventLoopGroup: group)
+      let runtime = try LambdaRuntime.createRuntime(eventLoopGroup: group) { (_, ctx) in
+        return ctx.eventLoop.makeSucceededFuture(nil)
+      }
       defer { XCTAssertNoThrow(try runtime.syncShutdown()) }
       XCTFail("Did not expect to succeed")
     }
@@ -66,26 +48,6 @@ class RuntimeTests: XCTestCase {
     }
   }
   
-  func testCreateRuntimeMissingHandler() {
-    setenv("AWS_LAMBDA_RUNTIME_API", "localhost", 1)
-    unsetenv("_HANDLER")
-    
-    let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
-    defer { XCTAssertNoThrow(try group.syncShutdownGracefully()) }
-    
-    do {
-      let runtime = try Runtime.createRuntime(eventLoopGroup: group)
-      defer { XCTAssertNoThrow(try runtime.syncShutdown()) }
-      XCTFail("Did not expect to succeed")
-    }
-    catch let error as RuntimeError {
-      XCTAssertEqual(error, RuntimeError.missingEnvironmentVariable("_HANDLER"))
-    }
-    catch {
-      XCTFail("Unexpected error: \(error)")
-    }
-  }
-
   // MARK: - Test Running -
   
 //  func testRegisterAFunction() {
