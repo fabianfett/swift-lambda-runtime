@@ -7,7 +7,7 @@
 
 import Foundation
 import NIO
-@testable import AWSLambda
+@testable import LambdaRuntime
 
 class MockLambdaRuntimeAPI {
   

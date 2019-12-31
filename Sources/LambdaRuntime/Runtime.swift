@@ -4,25 +4,23 @@ import NIO
 import NIOHTTP1
 import NIOFoundationCompat
 
-struct InvocationError: Codable {
+public struct InvocationError: Codable {
   let errorMessage: String
 }
 
-final public class Runtime {
+final public class LambdaRuntime {
+  
+  public typealias Handler = (NIO.ByteBuffer, Context) -> EventLoopFuture<NIO.ByteBuffer?>
   
   public let eventLoopGroup: EventLoopGroup
   public let runtimeLoop   : EventLoop
   
-  /// the name of the function to invoke
-  public let handlerName   : String
   public let environment   : Environment
+  public let handler       : Handler
 
   // MARK: - Private Properties -
   
   private let client: LambdaRuntimeAPI
-  
-  /// The functions that can be invoked by the runtime by name.
-  private var handlers: [String: Handler]
   
   private var shutdownPromise: EventLoopPromise<Void>?
   private var isShutdown: Bool = false
@@ -30,51 +28,38 @@ final public class Runtime {
   // MARK: - Public Methods -
 
   /// the runtime shall be initialised with an EventLoopGroup, that is used throughout the lambda
-  public static func createRuntime(eventLoopGroup: EventLoopGroup) throws -> Runtime {
-    
-    let environment = try Environment(ProcessInfo.processInfo.environment)
+  public static func createRuntime(eventLoopGroup: EventLoopGroup, environment: Environment? = nil, handler: @escaping Handler)
+    throws -> LambdaRuntime
+  {
+    let env = try environment ?? Environment()
     
     let client  = RuntimeAPIClient(
       eventLoopGroup: eventLoopGroup,
-      lambdaRuntimeAPI: environment.lambdaRuntimeAPI)
-    let runtime = Runtime(
+      lambdaRuntimeAPI: env.lambdaRuntimeAPI)
+    let runtime = LambdaRuntime(
       eventLoopGroup: eventLoopGroup,
       client: client,
-      environment: environment)
+      environment: env,
+      handler: handler)
     
     return runtime
   }
   
   init(eventLoopGroup: EventLoopGroup,
        client: LambdaRuntimeAPI,
-       environment: Environment)
+       environment: Environment,
+       handler: @escaping Handler)
   {
     
     self.eventLoopGroup = eventLoopGroup
     self.runtimeLoop    = eventLoopGroup.next()
     
     self.client         = client
-  
-    self.handlerName    = environment.handlerName
-    self.handlers       = [:]
-    
-    
     self.environment    = environment
+    self.handler        = handler
 
     // TODO: post init error
     // https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html#runtimes-api-initerror
-  }
-  
-  
-  public typealias Handler = (NIO.ByteBuffer, Context) -> EventLoopFuture<NIO.ByteBuffer?>
-  
-  /// Registers a handler function for execution by the runtime. This method is
-  /// not thread safe. Therefore it is only safe to invoke this function before
-  /// the `start` method is called.
-  public func register(for name: String, handler: @escaping Handler) {
-    self.runtimeLoop.execute {
-      self.handlers[name] = handler
-    }
   }
   
   // MARK: Runtime loop
@@ -115,18 +100,8 @@ final public class Runtime {
           environment: self.environment,
           invocation: invocation,
           eventLoop: self.runtimeLoop)
-        
-        guard let handler = self.handlers[self.handlerName] else {
-          return self.runtimeLoop.makeFailedFuture(RuntimeError.unknownLambdaHandler(self.handlerName))
-            .flatMapError { (error) -> EventLoopFuture<Void> in
-              return self.client.postInvocationError(for: context.requestId, error: error)
-            }
-            .flatMapErrorThrowing { (error) in
-              context.logger.error("Could not post lambda result to runtime. error: \(error)")
-            }
-        }
-        
-        return handler(byteBuffer, context)
+                
+        return self.handler(byteBuffer, context)
           .flatMap { (byteBuffer) -> EventLoopFuture<Void> in
             return self.client.postInvocationResponse(for: context.requestId, httpBody: byteBuffer)
           }

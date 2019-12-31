@@ -85,9 +85,9 @@ extension APIGateway {
     decoder: JSONDecoder = JSONDecoder(),
     encoder: JSONEncoder = JSONEncoder(),
     _ handler: @escaping (APIGateway.Request, Context) -> EventLoopFuture<APIGateway.Response>)
-    -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer>)
+    -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer?>)
   {
-    return { (inputBytes: NIO.ByteBuffer, ctx: Context) -> EventLoopFuture<ByteBuffer> in
+    return { (inputBytes: NIO.ByteBuffer, ctx: Context) -> EventLoopFuture<ByteBuffer?> in
       
       let req: APIGateway.Request
       do {

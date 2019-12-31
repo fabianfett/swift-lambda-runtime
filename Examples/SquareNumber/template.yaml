@@ -15,16 +15,13 @@ Resources:
   SwiftLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      ContentUri: Layer/swift-lambda-runtime/
-      # ContentUri:
-      #   Bucket: de.fabianfett.denkan.app.sam
-      #   Key: swift-lambda-runtime.zip
+      ContentUri: Layer/swift-lambda-layer/
 
   SquareNumberFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: Examples/SquareNumber/lambda.zip
-      Handler: "SquareNumber.squareNumber"
+      Handler: "squareNumber"
       Runtime: provided
       Layers:
       - !Ref SwiftLayer
@@ -33,7 +30,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: Examples/SquareNumber/lambda.zip
-      Handler: "SquareNumber.printNumber"
+      Handler: "printNumber"
       Runtime: provided
       Layers:
       - !Ref SwiftLayer

@@ -13,10 +13,9 @@ public class DynamoTodoStore {
     tableName: String,
     accessKeyId: String,
     secretAccessKey: String,
-    sessionToken: String,
+    sessionToken: String?,
     region: Region)
   {
-    
     self.dynamo = DynamoDB(
       accessKeyId: accessKeyId,
       secretAccessKey: secretAccessKey,
@@ -24,7 +23,6 @@ public class DynamoTodoStore {
       region: region,
       eventLoopGroupProvider: .shared(eventLoopGroup))
     self.tableName = tableName
-    
   }
 
 }
@@ -130,17 +128,11 @@ extension DynamoTodoStore: TodoStore {
       .map { _ in }
   }
   
-//  func updateTodo() -> EventLoopFuture<TodoItem> {
-//
-//  }
-  
   public func deleteAllTodos() -> EventLoopFuture<Void> {
-    
     return self.getTodos()
       .flatMap { (todos) -> EventLoopFuture<Void> in
         let ids = todos.map() { $0.id }
         return self.deleteTodos(ids: ids)
       }
-      
   }
 }

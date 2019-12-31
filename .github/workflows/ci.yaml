@@ -10,6 +10,8 @@ on:
 jobs:
   "Integration-Tests":
     runs-on: ubuntu-18.04
+    env:
+      SWIFT_VERSION: 5.1.3
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -20,9 +22,12 @@ jobs:
     - name: Install aws-sam-cli
       run: sudo pip install aws-sam-cli
     - name: Build Docker Swift Dev Image
-      run: docker build -t swift-dev:5.1.2 .
-    - name: Build local layer
-      run: cd Layer && make create_layer
+      run: docker build --build-arg SWIFT_VERSION=${SWIFT_VERSION} -t fabianfett/amazonlinux-swift:${SWIFT_VERSION}-amazonlinux2-dev ./docker
+    - name: Download local layer
+      run: | 
+        mkdir -p Layer
+        curl -o Layer/swift-${SWIFT_VERSION}-RELEASE.zip https://amazonlinux-swift.s3.eu-central-1.amazonaws.com/layers/swift-${SWIFT_VERSION}-RELEASE.zip
+        unzip Layer/swift-${SWIFT_VERSION}-RELEASE.zip -d Layer/swift-lambda-layer
     - name: test local lambda
       run: make test_lambda
       env:
@@ -48,7 +53,7 @@ jobs:
     - name: Test
       run: swift test --enable-code-coverage --enable-test-discovery
     - name: Convert coverage files
-      run: llvm-cov export -format="lcov" .build/debug/swift-aws-lambdaPackageTests.xctest -instr-profile .build/debug/codecov/default.profdata > info.lcov
+      run: llvm-cov export -format="lcov" .build/debug/swift-lambda-runtimePackageTests.xctest -instr-profile .build/debug/codecov/default.profdata > info.lcov
     - name: Upload to codecov.io
       uses: codecov/codecov-action@v1.0.3
       with:
@@ -72,6 +77,6 @@ jobs:
     - name: Xcode Tests
       run: |
         swift package generate-xcodeproj
-        xcodebuild -quiet -parallel-testing-enabled YES -scheme swift-aws-lambda-Package -enableCodeCoverage YES build test
+        xcodebuild -quiet -parallel-testing-enabled YES -scheme swift-lambda-runtime-Package -enableCodeCoverage YES build test
     - name: Codecov
-      run: bash <(curl -s https://codecov.io/bash) -J 'AWSLambda' -t ${{secrets.CODECOV_TOKEN}}
+      run: bash <(curl -s https://codecov.io/bash) -J 'LambdaRuntime' -t ${{secrets.CODECOV_TOKEN}}

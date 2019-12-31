@@ -3,7 +3,7 @@ import XCTest
 import NIO
 import NIOHTTP1
 import NIOTestUtils
-@testable import AWSLambda
+@testable import LambdaRuntime
 
 class RuntimeAPIClientTests: XCTestCase {
   
@@ -96,7 +96,7 @@ class RuntimeAPIClientTests: XCTestCase {
     }
   }
   
-  enum InvocationError: Error {
+  enum TestError: Error {
     case unknown
   }
   
@@ -112,10 +112,10 @@ class RuntimeAPIClientTests: XCTestCase {
 
     do {
       let invocationId = "abc"
-      let error  = InvocationError.unknown
+      let error  = TestError.unknown
       let result = client.postInvocationError(for: invocationId, error: error)
       
-      let respError = AWSLambda.InvocationError(errorMessage: String(describing: error))
+      let respError = InvocationError(errorMessage: String(describing: error))
       let body   = try JSONEncoder().encodeAsByteBuffer(respError, allocator: ByteBufferAllocator())
       
       XCTAssertNoThrow(try XCTAssertEqual(

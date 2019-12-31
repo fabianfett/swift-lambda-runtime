@@ -1,15 +1,8 @@
-//
-//  File.swift
-//  
-//
-//  Created by Fabian Fett on 19.11.19.
-//
-
 import Foundation
 import NIO
 import NIOHTTP1
 import TodoService
-import AWSLambda
+import LambdaRuntime
 
 class TodoController {
   
@@ -150,7 +143,7 @@ class TodoController {
       encoder.userInfo[.baseUrl] = URL(string: "\(proto)://\(host)/\(request.requestContext.stage)")!
     }
     else { //local
-      encoder.userInfo[.baseUrl] = URL(string: "\(proto)://\(host)/")!
+      encoder.userInfo[.baseUrl] = URL(string: "\(proto)://\(host)")!
     }
     
     return encoder

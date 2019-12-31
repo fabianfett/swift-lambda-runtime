@@ -4,7 +4,7 @@ EXAMPLE_EXECUTABLE=$(EXAMPLE_LAMBDA)
 EXAMPLE_PROJECT_PATH=Examples/$(EXAMPLE_LAMBDA)
 LAMBDA_ZIP=$(EXAMPLE_PROJECT_PATH)/lambda.zip
 
-SWIFT_DOCKER_IMAGE=swift-dev:5.1.2
+SWIFT_DOCKER_IMAGE=fabianfett/amazonlinux-swift:${SWIFT_VERSION}-amazonlinux2-dev
 
 clean_lambda:
 	rm $(EXAMPLE_PROJECT_PATH)/$(LAMBDA_ZIP) || true
@@ -19,11 +19,10 @@ build_lambda:
 			swift build -c release
 
 package_lambda: build_lambda
-	zip -r -j $(LAMBDA_ZIP) $(EXAMPLE_PROJECT_PATH)/.build/release/$(EXAMPLE_EXECUTABLE)
-
-deploy_lambda: package_lambda
-	aws lambda update-function-code --function-name $(EXAMPLE_LAMBDA) --zip-file fileb://$(LAMBDA_ZIP)
+	cp $(EXAMPLE_PROJECT_PATH)/.build/release/$(EXAMPLE_EXECUTABLE) $(EXAMPLE_PROJECT_PATH)/bootstrap
+	zip -r -j $(LAMBDA_ZIP) $(EXAMPLE_PROJECT_PATH)/bootstrap
 	
 test_lambda: package_lambda
-	echo '{"number": 3 }' | sam local invoke --template $(EXAMPLE_PROJECT_PATH)/template.yaml -v . "PrintNumberFunction"
 	echo '{"number": 9 }' | sam local invoke --template $(EXAMPLE_PROJECT_PATH)/template.yaml -v . "SquareNumberFunction"
+	echo '{"number": 3 }' | sam local invoke --template $(EXAMPLE_PROJECT_PATH)/template.yaml -v . "PrintNumberFunction"
+

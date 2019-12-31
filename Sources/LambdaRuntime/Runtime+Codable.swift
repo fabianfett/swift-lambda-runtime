@@ -2,7 +2,7 @@ import Foundation
 import NIO
 import NIOFoundationCompat
 
-extension Runtime {
+extension LambdaRuntime {
     
   /// wrapper to use for the register function that wraps the encoding and decoding
   public static func codable<Event: Decodable, Result: Encodable>(
@@ -39,29 +39,6 @@ extension Runtime {
       }
       
       return handler(input, ctx).map { return nil }
-    }
-  }
-  
-  /// synchronous interface to use with codable
-  public static func codable<Event: Decodable, Result: Encodable>(
-    _ handler: @escaping (Event, Context) throws -> (Result))
-    -> ((NIO.ByteBuffer, Context) -> EventLoopFuture<ByteBuffer?>)
-  {
-    return Runtime.codable { (event: Event, context) -> EventLoopFuture<Result> in
-      let promise = context.eventLoop.makePromise(of: Result.self)
-      
-      // TBD: What is the best queue to jump to here?
-      DispatchQueue.global(qos: .userInteractive).async {
-        do {
-          let result = try handler(event, context)
-          promise.succeed(result)
-        }
-        catch {
-          promise.fail(error)
-        }
-      }
-      
-      return promise.futureResult
     }
   }
 }

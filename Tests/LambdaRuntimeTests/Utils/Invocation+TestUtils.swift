@@ -1,7 +1,7 @@
 import Foundation
 import NIO
 import NIOHTTP1
-@testable import AWSLambda
+@testable import LambdaRuntime
 
 extension Invocation {
   

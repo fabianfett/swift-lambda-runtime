@@ -12,13 +12,13 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/apple/swift-nio.git", .upToNextMajor(from: "2.9.0")),
     .package(url: "https://github.com/apple/swift-log.git", .upToNextMajor(from: "1.1.1")),
-    .package(url: "https://github.com/swift-aws/aws-sdk-swift.git", .branch("master")),
+    .package(url: "https://github.com/swift-aws/aws-sdk-swift.git", .upToNextMajor(from: "4.0.0")),
     .package(path: "../../"),
   ],
   targets: [
     .target(
       name: "TodoAPIGateway",
-      dependencies: ["AWSLambda", "Logging", "TodoService", "NIO", "NIOHTTP1", "DynamoDB"]),
+      dependencies: ["LambdaRuntime", "Logging", "TodoService", "NIO", "NIOHTTP1", "DynamoDB"]),
     .testTarget(
       name: "TodoAPIGatewayTests",
       dependencies: ["TodoAPIGateway"]),

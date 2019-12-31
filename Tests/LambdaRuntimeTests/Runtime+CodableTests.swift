@@ -2,7 +2,7 @@ import Foundation
 import XCTest
 import NIO
 import NIOHTTP1
-@testable import AWSLambda
+@testable import LambdaRuntime
 
 class RuntimeCodableTests: XCTestCase {
     
@@ -27,7 +27,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<TestResponse> in
+    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<TestResponse> in
       return ctx.eventLoop.makeSucceededFuture(TestResponse(greeting: "Hello \(req.name)!"))
     }
     
@@ -51,7 +51,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<TestResponse> in
+    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<TestResponse> in
       return ctx.eventLoop.makeSucceededFuture(TestResponse(greeting: "Hello \(req.name)!"))
     }
     
@@ -80,7 +80,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
+    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
       return ctx.eventLoop.makeSucceededFuture(Void())
     }
     
@@ -100,7 +100,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
+    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
       return ctx.eventLoop.makeSucceededFuture(Void())
     }
     
@@ -126,7 +126,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
+    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
       return ctx.eventLoop.makeFailedFuture(RuntimeError.unknown)
     }
     
@@ -145,31 +145,4 @@ class RuntimeCodableTests: XCTestCase {
       XCTFail("Unexpected error: \(error)")
     }
   }
-
-  // MARK: - Synchrounous Interface -
-  
-  func testSynchronousCodableInterfaceSuccess() {
-    let eventLoopGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1)
-    defer {
-        XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
-    }
-    let handler = Runtime.codable { (req: TestRequest, ctx) -> TestResponse in
-      return TestResponse(greeting: "Hello \(req.name)!")
-    }
-    
-    do {
-      let inputBytes = try JSONEncoder().encodeAsByteBuffer(TestRequest(name: "world"), allocator: ByteBufferAllocator())
-      let ctx = try Context(environment: .forTesting(), invocation: .forTesting(), eventLoop: eventLoopGroup.next())
-      
-      let response = try handler(inputBytes, ctx).flatMapThrowing { (bytes) -> TestResponse in
-        return try JSONDecoder().decode(TestResponse.self, from: bytes!)
-      }.wait()
-      
-      XCTAssertEqual(response, TestResponse(greeting: "Hello world!"))
-    }
-    catch {
-      XCTFail("Unexpected error: \(error)")
-    }
-  }
-    
 }
