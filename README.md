@@ -232,6 +232,14 @@ There are two projects providing you an API to interact with AWS resources.
 - [`aws-sdk-swift`](https://github.com/swift-aws/aws-sdk-swift) A community driven effort. The [TodoList example](https://github.com/fabianfett/swift-lambda-runtime/tree/master/Examples/TodoAPIGateway) uses this sdk to [query DynamoDB](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/TodoAPIGateway/Sources/TodoService/DynamoTodoStore.swift).
 - [`smoke-aws`](https://github.com/amzn/smoke-aws) An Amazon (not AWS 😉) driven effort. Please be aware that this sdk does not return `EventLoopFuture`s. Therefore integrating may be a little tricky. Not tested.
 
+### Logging 
+
+If you want to log something inside your lambda you can use the [`logger` property](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Sources/LambdaRuntime/Context.swift#L15) on the `Context` class. The `logger` is based on [`swift-log`](https://github.com/apple/swift-log) and should for this reason be compatible with lot's of other server-side Swift projects. By default the [RequestId is exposed](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Sources/LambdaRuntime/Context.swift#L21) as metadata. An example can be found [here](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/URLRequestWithSession/Sources/URLRequestWithSession/main.swift).
+
+### EventLoop
+
+The EventLoop, on which your function is executed, can be accessed via the [`eventLoop` property](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Sources/LambdaRuntime/Context.swift#L16) on the `Context` class. An example can be found [here](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/URLRequestWithSession/Sources/URLRequestWithSession/main.swift).
+
 ## Contributing
 
 Please feel welcome and encouraged to contribute to swift-lambda-runtime. The current version of swift-lambda-runtime has a long way to go before being ready for production use and help is always welcome.
@@ -245,3 +253,4 @@ Focus areas for the time being:
 ## Credits
 
 - [Toni Suter](https://github.com/tonisuter/aws-lambda-swift) started the project to bring Swift to AWS Lambda.
+- [grpc-swift](https://github.com/grpc/grpc-swift) influenced how the `Logger` and `EventLoop` are exposed to the user using the `Context`.
