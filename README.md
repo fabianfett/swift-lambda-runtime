@@ -123,16 +123,16 @@ struct Output: Codable {
 
 func squareNumber(input: Input, context: Context) -> EventLoopFuture<Output> {
   let squaredNumber = input.number * input.number
-  return ctx.eventLoop.makeSucceededFuture(Output(result: squaredNumber))
+  return context.eventLoop.makeSucceededFuture(Output(result: squaredNumber))
 }
 
 let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
 defer { try! group.syncShutdownGracefully() }
 
 do {
-  let runtime = try Runtime.createRuntime(
+  let runtime = try LambdaRuntime.createRuntime(
     eventLoopGroup: group, 
-    handler: Runtime.codable(squareNumber))
+    handler: LambdaRuntime.codable(squareNumber))
 
   defer { try! runtime.syncShutdown() }
   
