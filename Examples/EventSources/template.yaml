@@ -197,6 +197,28 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+            
+  # --- s3
+  
+  S3TestEventBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      AccessControl: Private
+  
+  HandleS3Event:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda.zip
+      Handler: "s3"
+      Runtime: provided
+      Layers:
+      - !Ref SwiftLayer
+      Events:
+        s3:
+          Type: S3
+          Properties:
+            Bucket: !Ref S3TestEventBucket
+            Events: s3:ObjectCreated:*
 
   # --- load balancer
 
@@ -236,7 +258,7 @@ Resources:
 
   TestLoadBalancer:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    Properties: 
+    Properties:
       Scheme: internet-facing
       Type: application
       Subnets:
@@ -259,9 +281,9 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     DependsOn:
     - HandleLoadBalancerLambdaInvokePermission
-    Properties: 
+    Properties:
       Name: EinSternDerDeinenNamenTraegt
-      Targets: 
+      Targets:
         - Id: !GetAtt HandleLoadBalancerLambda.Arn
       TargetGroupAttributes:
         - Key: lambda.multi_value_headers.enabled

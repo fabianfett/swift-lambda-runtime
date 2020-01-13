@@ -55,7 +55,7 @@ Learn in depth how to build Lambdas in Swift in my blog series:
 
 - [x] Built on top of `Swift-NIO`
 - [x] Integration with Swift [`Logging`](https://github.com/apple/swift-log)
-- [x] Ready-to-use [AWS Events](https://github.com/fabianfett/swift-lambda-runtime/tree/master/Sources/LambdaRuntime/Events) structs to get started as fast as possible. Currently implemented: Application Load Balancer, APIGateway, Cloudwatch Scheduled Events, DynamoDB Streams, SNS and SQS Messages. More coming soon.
+- [x] Ready-to-use [AWS Events](https://github.com/fabianfett/swift-lambda-runtime/tree/master/Sources/LambdaRuntime/Events) structs to get started as fast as possible. Currently implemented: Application Load Balancer, APIGateway, Cloudwatch Scheduled Events, DynamoDB Streams, S3, SNS and SQS Messages. More coming soon.
 - [x] [Tested integration](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/TodoAPIGateway/Sources/TodoAPIGateway/main.swift) with [`aws-swift-sdk`](https://github.com/swift-aws/aws-sdk-swift)
 - [x] [Two examples](https://github.com/fabianfett/swift-lambda-runtime/tree/master/Examples) to get you up and running as fast as possible (including an [API-Gateway Todo-List](http://todobackend.com/client/index.html?https://mwpixnkbzj.execute-api.eu-central-1.amazonaws.com/test/todos))
 - [x] Unit and end-to-end tests

@@ -10,10 +10,23 @@ let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
 defer { try! group.syncShutdownGracefully() }
 let logger = Logger(label: "AWSLambda.EventSources")
 
+struct SNSBody: Codable {
+  let name: String
+  let whatevar: String
+}
+
 func handleSNS(event: SNS.Event, ctx: Context) -> EventLoopFuture<Void> {
-  ctx.logger.info("Payload: \(String(describing: event))")
-  
-  return ctx.eventLoop.makeSucceededFuture(Void())
+  do {
+    let message = event.records.first!.sns
+    let _: SNSBody = try message.payload()
+    
+    // handle your message
+    
+    return ctx.eventLoop.makeSucceededFuture(Void())
+  }
+  catch {
+    return ctx.eventLoop.makeFailedFuture(error)
+  }
 }
 
 func handleSQS(event: SQS.Event, ctx: Context) -> EventLoopFuture<Void> {
@@ -48,6 +61,12 @@ func handleAPIRequest(req: APIGateway.Request, ctx: Context) -> EventLoopFuture<
   let response = try! APIGateway.Response(statusCode: .ok, payload: payload)
   
   return ctx.eventLoop.makeSucceededFuture(response)
+}
+
+func handleS3(event: S3.Event, ctx: Context) -> EventLoopFuture<Void> {
+  ctx.logger.info("Payload: \(String(describing: event))")
+  
+  return ctx.eventLoop.makeSucceededFuture(Void())
 }
 
 func handleLoadBalancerRequest(req: ALB.TargetGroupRequest, ctx: Context) ->
@@ -100,6 +119,8 @@ do {
     handler = printOriginalPayload(LambdaRuntime.codable(handleCloudwatchSchedule))
   case "api":
     handler = printOriginalPayload(APIGateway.handler(handleAPIRequest))
+  case "s3":
+    handler = printOriginalPayload(LambdaRuntime.codable(handleS3))
   case "loadbalancer":
     handler = printOriginalPayload(ALB.handler(multiValueHeadersEnabled: true, handleLoadBalancerRequest))
   default:
