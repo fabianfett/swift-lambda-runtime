@@ -24,8 +24,8 @@ let package = Package(
     ),
     .target(
       name: "LambdaRuntimeTestUtils",
-      dependencies: ["AsyncHTTPClient", "NIO", "NIOHTTP1", "NIOFoundationCompat", "Logging", "Base64Kit"]
+      dependencies: ["AsyncHTTPClient", "NIO", "NIOHTTP1", "NIOFoundationCompat", "Logging", "Base64Kit", "LambdaRuntime"]
     ),
-    .testTarget(name: "LambdaRuntimeTests", dependencies: ["LambdaRuntime", "NIOTestUtils", "Logging"])
+    .testTarget(name: "LambdaRuntimeTests", dependencies: ["LambdaRuntime", "NIOTestUtils", "Logging", "LambdaRuntimeTestUtils"])
   ]
 )
