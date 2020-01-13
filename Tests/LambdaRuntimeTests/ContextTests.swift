@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 import NIO
 @testable import LambdaRuntime
+import LambdaRuntimeTestUtils
 
 class ContextTests: XCTestCase {
   

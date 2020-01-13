@@ -1,10 +1,8 @@
-import NIO
-import NIOHTTP1
 @testable import LambdaRuntime
 
 extension Environment {
   
-  static func forTesting(
+  public static func forTesting(
     lambdaRuntimeAPI: String? = nil,
     handler         : String? = nil,
     functionName    : String? = nil,

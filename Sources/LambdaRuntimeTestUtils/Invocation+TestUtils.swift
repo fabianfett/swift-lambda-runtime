@@ -1,11 +1,10 @@
 import Foundation
-import NIO
 import NIOHTTP1
 @testable import LambdaRuntime
 
 extension Invocation {
   
-  static func forTesting(
+  public static func forTesting(
     requestId  : String       = UUID().uuidString.lowercased(),
     timeout    : TimeInterval = 1,
     functionArn: String       = "arn:aws:lambda:us-east-1:123456789012:function:custom-runtime",

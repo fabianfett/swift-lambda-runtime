@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 import NIO
 import NIOHTTP1
+import LambdaRuntimeTestUtils
 @testable import LambdaRuntime
 
 class RuntimeCodableTests: XCTestCase {
