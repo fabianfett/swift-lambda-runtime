@@ -1,4 +1,3 @@
-import NIOHTTP1
 @testable import LambdaRuntime
 
 extension Environment {

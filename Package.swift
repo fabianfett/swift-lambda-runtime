@@ -26,6 +26,11 @@ let package = Package(
       name: "LambdaRuntimeTestUtils",
       dependencies: ["NIOHTTP1", "LambdaRuntime"]
     ),
-    .testTarget(name: "LambdaRuntimeTests", dependencies: ["LambdaRuntime", "NIOTestUtils", "Logging", "LambdaRuntimeTestUtils"])
+    .testTarget(name: "LambdaRuntimeTests", dependencies: [
+        "LambdaRuntime",
+        "LambdaRuntimeTestUtils",
+        "NIOTestUtils",
+        "Logging",
+    ])
   ]
 )

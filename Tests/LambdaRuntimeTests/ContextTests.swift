@@ -1,8 +1,8 @@
 import Foundation
 import XCTest
 import NIO
-import LambdaRuntimeTestUtils
 @testable import LambdaRuntime
+import LambdaRuntimeTestUtils
 
 class ContextTests: XCTestCase {
   
