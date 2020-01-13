@@ -9,7 +9,7 @@ import Base64Kit
 public struct APIGateway {
   
   /// APIGatewayRequest contains data coming from the API Gateway
-  public struct Request {
+  public struct Request: DecodableBody {
     
     public struct Context: Codable {
       
@@ -162,18 +162,9 @@ extension APIGateway.Request: Decodable {
 
 extension APIGateway.Request {
   
+  @available(*, deprecated, renamed: "decodeBody(_:decoder:)")
   public func payload<Payload: Decodable>(_ type: Payload.Type, decoder: JSONDecoder = JSONDecoder()) throws -> Payload {
-    let body = self.body ?? ""
-        
-    let capacity = body.lengthOfBytes(using: .utf8)
-
-    // TBD: I am pretty sure, we don't need this buffer copy here.
-    //      Access the strings buffer directly to get to the data.
-    var buffer   = ByteBufferAllocator().buffer(capacity: capacity)
-    buffer.setString(body, at: 0)
-    buffer.moveWriterIndex(to: capacity)
-    
-    return try decoder.decode(Payload.self, from: buffer)
+    return try self.decodeBody(Payload.self, decoder: decoder)
   }
 }
 

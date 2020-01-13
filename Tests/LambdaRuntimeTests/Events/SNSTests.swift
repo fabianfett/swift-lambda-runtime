@@ -73,7 +73,7 @@ class SNSTests: XCTestCase {
       XCTAssertEqual(record.sns.messageAttributes["binary"], .binary(binaryBuffer))
       XCTAssertEqual(record.sns.messageAttributes["string"], .string("abc123"))
       
-      let payload: TestStruct = try record.sns.payload()
+      let payload = try record.sns.decodeBody(TestStruct.self)
       XCTAssertEqual(payload.hello, "world")
     }
     catch {

@@ -12,7 +12,7 @@ public class Context {
   public let traceId     : String
   public let requestId   : String
   
-  public let logger     : Logger
+  public let logger      : Logger
   public let eventLoop   : EventLoop
   public let deadlineDate: Date
 
