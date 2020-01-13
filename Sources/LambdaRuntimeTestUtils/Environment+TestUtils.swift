@@ -4,7 +4,7 @@ import NIOHTTP1
 
 extension Environment {
   
-  static func forTesting(
+  public static func forTesting(
     lambdaRuntimeAPI: String? = nil,
     handler         : String? = nil,
     functionName    : String? = nil,
