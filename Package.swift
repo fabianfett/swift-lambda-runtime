@@ -10,6 +10,10 @@ let package = Package(
       name: "LambdaRuntime",
       targets: ["LambdaRuntime"]
     ),
+  .library(
+    name: "LambdaRuntimeTestUtils",
+    targets: ["LambdaRuntimeTestUtils"]
+  ),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-nio.git", .upToNextMajor(from: "2.9.0")),
