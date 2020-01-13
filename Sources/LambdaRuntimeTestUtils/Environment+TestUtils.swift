@@ -1,4 +1,3 @@
-import NIO
 import NIOHTTP1
 @testable import LambdaRuntime
 
