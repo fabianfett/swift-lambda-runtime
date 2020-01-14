@@ -25,7 +25,7 @@ struct Greeting: Codable {
 
 let handler = APIGateway.handler() { (request, ctx) in
   do {
-    let payload: Input = try request.payload()
+    let payload = try request.decodeBody(Input.self)
 
     let response = try APIGateway.Response(
       statusCode: .ok,

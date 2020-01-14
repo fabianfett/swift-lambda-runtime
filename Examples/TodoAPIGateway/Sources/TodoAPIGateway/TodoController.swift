@@ -39,7 +39,7 @@ class TodoController {
   func createTodo(request: APIGateway.Request, context: Context) -> EventLoopFuture<APIGateway.Response> {
     let newTodo: TodoItem
     do {
-      let payload: NewTodo = try request.payload()
+      let payload = try request.decodeBody(NewTodo.self)
       newTodo = TodoItem(
         id: UUID().uuidString.lowercased(),
         order: payload.order,
@@ -116,7 +116,7 @@ class TodoController {
     
     let patchTodo: PatchTodo
     do {
-      patchTodo = try request.payload()
+      patchTodo = try request.decodeBody(PatchTodo.self)
     }
     catch {
       return context.eventLoop.makeFailedFuture(error)
@@ -135,7 +135,10 @@ class TodoController {
   private func createResponseEncoder(_ request: APIGateway.Request) -> JSONEncoder {
     let encoder = JSONEncoder()
     
-    guard let proto = request.headers?["X-Forwarded-Proto"], let host = request.headers?["Host"] else {
+    guard let proto = request.headers["X-Forwarded-Proto"].first,
+          let host = request.headers["Host"].first
+      else
+    {
       return encoder
     }
     

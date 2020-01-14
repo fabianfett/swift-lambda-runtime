@@ -18,7 +18,7 @@ struct SNSBody: Codable {
 func handleSNS(event: SNS.Event, ctx: Context) -> EventLoopFuture<Void> {
   do {
     let message = event.records.first!.sns
-    let _: SNSBody = try message.payload()
+    let _ = try message.decodeBody(SNSBody.self)
     
     // handle your message
     
