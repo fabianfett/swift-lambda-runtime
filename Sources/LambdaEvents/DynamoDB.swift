@@ -5,7 +5,7 @@ import NIO
 public struct DynamoDB {
   
   public struct Event: Decodable {
-    let records: [EventRecord]
+    public let records: [EventRecord]
     
     public enum CodingKeys: String, CodingKey {
       case records = "Records"

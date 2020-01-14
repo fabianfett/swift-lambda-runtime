@@ -10,10 +10,14 @@ let package = Package(
       name: "LambdaRuntime",
       targets: ["LambdaRuntime"]
     ),
-  .library(
-    name: "LambdaRuntimeTestUtils",
-    targets: ["LambdaRuntimeTestUtils"]
-  ),
+    .library(
+      name: "LambdaEvents",
+      targets: ["LambdaEvents"]
+    ),
+    .library(
+      name: "LambdaRuntimeTestUtils",
+      targets: ["LambdaRuntimeTestUtils"]
+    ),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-nio.git", .upToNextMajor(from: "2.9.0")),
@@ -22,25 +26,30 @@ let package = Package(
     .package(url: "https://github.com/fabianfett/swift-base64-kit.git", .upToNextMajor(from: "0.2.0")),
   ],
   targets: [
-    .target(
-      name: "LambdaRuntime", dependencies: [
-        "AsyncHTTPClient",
-        "NIO",
-        "NIOHTTP1",
-        "NIOFoundationCompat",
-        "Logging",
-        "Base64Kit"
+    .target(name: "LambdaEvents", dependencies: [
+      "NIO",
+      "NIOHTTP1",
+      "NIOFoundationCompat",
+      "Base64Kit"
     ]),
-    .target(
-      name: "LambdaRuntimeTestUtils",
-      dependencies: ["NIOHTTP1", "LambdaRuntime"]
-    ),
+    .target(name: "LambdaRuntime", dependencies: [
+      "LambdaEvents",
+      "AsyncHTTPClient",
+      "NIO",
+      "NIOHTTP1",
+      "NIOFoundationCompat",
+      "Logging"
+    ]),
+    .target(name: "LambdaRuntimeTestUtils", dependencies: [
+      "NIOHTTP1",
+      "LambdaRuntime"
+    ]),
     .testTarget(name: "LambdaRuntimeTests", dependencies: [
-        "LambdaRuntime",
-        "LambdaRuntimeTestUtils",
-        "Base64Kit",
-        "NIOTestUtils",
-        "Logging",
+      "LambdaEvents",
+      "LambdaRuntime",
+      "LambdaRuntimeTestUtils",
+      "NIOTestUtils",
+      "Logging",
     ])
   ]
 )

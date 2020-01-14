@@ -32,7 +32,7 @@ class APIGatewayTests: XCTestCase {
         eventLoop: eventLoopGroup.next())
       
       let payload = APIGatewayTests.exampleGetPayload
-      let length  = payload.lengthOfBytes(using: .utf8)
+      let length  = payload.utf8.count
       var testPayload = ByteBufferAllocator().buffer(capacity: length)
       testPayload.setString(payload, at: 0)
       testPayload.moveWriterIndex(forwardBy: length)
