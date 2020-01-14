@@ -4,7 +4,7 @@ import NIO
 /// https://github.com/aws/aws-lambda-go/blob/master/events/sqs.go
 public struct SQS {
   
-  public struct Event: Codable {
+  public struct Event: Decodable {
     public let records: [Message]
     
     enum CodingKeys: String, CodingKey {
@@ -12,7 +12,7 @@ public struct SQS {
     }
   }
   
-  public struct Message: Codable {
+  public struct Message: DecodableBody {
     
     /// https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_MessageAttributeValue.html
     public enum Attribute {
@@ -23,7 +23,7 @@ public struct SQS {
     
     public let messageId              : String
     public let receiptHandle          : String
-    public let body                   : String
+    public let body                   : String?
     public let md5OfBody              : String
     public let md5OfMessageAttributes : String?
     public let attributes             : [String: String]
@@ -31,20 +31,41 @@ public struct SQS {
     public let eventSourceArn         : String
     public let eventSource            : String
     public let awsRegion              : String
-    
-    enum CodingKeys: String, CodingKey {
-      case messageId
-      case receiptHandle
-      case body
-      case md5OfBody
-      case md5OfMessageAttributes
-      case attributes
-      case messageAttributes
-      case eventSourceArn         = "eventSourceARN"
-      case eventSource
-      case awsRegion
-    }
   }
+}
+
+extension SQS.Message: Decodable {
+  
+  enum CodingKeys: String, CodingKey {
+    case messageId
+    case receiptHandle
+    case body
+    case md5OfBody
+    case md5OfMessageAttributes
+    case attributes
+    case messageAttributes
+    case eventSourceArn = "eventSourceARN"
+    case eventSource
+    case awsRegion
+  }
+  
+  public init(from decoder: Decoder) throws {
+
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self.messageId              = try container.decode(String.self, forKey: .messageId)
+    self.receiptHandle          = try container.decode(String.self, forKey: .receiptHandle)
+    self.md5OfBody              = try container.decode(String.self, forKey: .md5OfBody)
+    self.md5OfMessageAttributes = try container.decodeIfPresent(String.self, forKey: .md5OfMessageAttributes)
+    self.attributes             = try container.decode([String: String].self, forKey: .attributes)
+    self.messageAttributes      = try container.decode([String: Attribute].self, forKey: .messageAttributes)
+    self.eventSourceArn         = try container.decode(String.self, forKey: .eventSourceArn)
+    self.eventSource            = try container.decode(String.self, forKey: .eventSource)
+    self.awsRegion              = try container.decode(String.self, forKey: .awsRegion)
+    
+    let body = try container.decode(String?.self, forKey: .body)
+    self.body = body != "" ? body : nil
+  }
+  
 }
 
 extension SQS.Message.Attribute: Equatable { }

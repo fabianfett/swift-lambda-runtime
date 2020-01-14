@@ -8,7 +8,7 @@ import NIOHTTP1
 public struct ALB {
   
   /// ALBTargetGroupRequest contains data originating from the ALB Lambda target group integration
-  public struct TargetGroupRequest {
+  public struct TargetGroupRequest: DecodableBody {
     
     /// ALBTargetGroupRequestContext contains the information to identify the load balancer invoking the lambda
     public struct Context: Codable {
@@ -21,7 +21,7 @@ public struct ALB {
     public let headers: HTTPHeaders
     public let requestContext: Context
     public let isBase64Encoded: Bool
-    public let body: String
+    public let body: String?
   }
   
   /// ELBContext contains the information to identify the ARN invoking the lambda
@@ -143,7 +143,9 @@ extension ALB.TargetGroupRequest: Decodable {
     
     self.requestContext  = try container.decode(Context.self, forKey: .requestContext)
     self.isBase64Encoded = try container.decode(Bool.self, forKey: .isBase64Encoded)
-    self.body            = try container.decode(String.self, forKey: .body)
+    
+    let body = try container.decode(String.self, forKey: .body)
+    self.body = body != "" ? body : nil
   }
   
 }

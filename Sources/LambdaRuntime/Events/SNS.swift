@@ -100,20 +100,15 @@ extension SNS.Message: Decodable {
 
 }
 
-extension SNS.Message {
+extension SNS.Message: DecodableBody {
   
+  public var body: String? {
+    return self.message != "" ? self.message : nil
+  }
+  
+  @available(*, deprecated, renamed: "decodeBody(_:decoder:)")
   public func payload<Payload: Decodable>(decoder: JSONDecoder = JSONDecoder()) throws -> Payload {
-    let body = self.message
-        
-    let capacity = body.lengthOfBytes(using: .utf8)
-
-    // TBD: I am pretty sure, we don't need this buffer copy here.
-    //      Access the strings buffer directly to get to the data.
-    var buffer   = ByteBufferAllocator().buffer(capacity: capacity)
-    buffer.setString(body, at: 0)
-    buffer.moveWriterIndex(to: capacity)
-    
-    return try decoder.decode(Payload.self, from: buffer)
+    return try self.decodeBody(Payload.self, decoder: decoder)
   }
 }
 

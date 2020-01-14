@@ -3,8 +3,8 @@ import XCTest
 import NIO
 import NIOHTTP1
 import NIOFoundationCompat
-import LambdaRuntimeTestUtils
 @testable import LambdaRuntime
+import LambdaRuntimeTestUtils
 
 class APIGatewayTests: XCTestCase {
   
@@ -85,7 +85,7 @@ class APIGatewayTests: XCTestCase {
       XCTAssertEqual(request.path, "/todos")
       XCTAssertEqual(request.httpMethod, .POST)
       
-      let todo = try request.payload(Todo.self)
+      let todo = try request.decodeBody(Todo.self)
       XCTAssertEqual(todo.title, "a todo")
     }
     catch {
