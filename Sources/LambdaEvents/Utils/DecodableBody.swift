@@ -1,15 +1,13 @@
 import Foundation
-import NIO
-import NIOFoundationCompat
 
-protocol DecodableBody {
+public protocol DecodableBody {
   
   var body: String? { get }
   var isBase64Encoded: Bool { get }
   
 }
 
-extension DecodableBody {
+public extension DecodableBody {
   
   var isBase64Encoded: Bool {
     return false
@@ -17,7 +15,7 @@ extension DecodableBody {
   
 }
 
-extension DecodableBody {
+public extension DecodableBody {
   
   func decodeBody<T: Decodable>(_ type: T.Type, decoder: JSONDecoder = JSONDecoder()) throws -> T {
     

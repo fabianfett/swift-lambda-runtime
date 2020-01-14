@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 import NIO
 @testable import LambdaRuntime
+@testable import LambdaEvents
 
 class S3Tests: XCTestCase {
 
