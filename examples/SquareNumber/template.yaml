@@ -15,12 +15,12 @@ Resources:
   SwiftLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      ContentUri: Layer/swift-lambda-layer/
+      ContentUri: swift-lambda-layer/
 
   SquareNumberFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: Examples/SquareNumber/lambda.zip
+      CodeUri: lambda.zip
       Handler: "squareNumber"
       Runtime: provided
       Layers:
@@ -29,7 +29,7 @@ Resources:
   PrintNumberFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: Examples/SquareNumber/lambda.zip
+      CodeUri: lambda.zip
       Handler: "printNumber"
       Runtime: provided
       Layers:

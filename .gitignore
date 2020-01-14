@@ -2,7 +2,7 @@
 .build
 /*.xcodeproj
 xcuserdata
-Layer
-Examples/**/lambda.zip
 packaged.yaml
-bootstrap
+examples/**/bootstrap
+examples/**/lambda.zip
+examples/**/swift-lambda-layer
