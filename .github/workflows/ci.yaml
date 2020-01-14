@@ -8,8 +8,15 @@ on:
     - master
 
 jobs:
-  "Integration-Tests":
+  "Build-Examples":
     runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        example: 
+        - EventSources
+        - SquareNumber
+        - TodoAPIGateway
+        - URLRequestWithSession
     env:
       SWIFT_VERSION: 5.1.3
     steps:
@@ -19,20 +26,27 @@ jobs:
         fetch-depth: 1
     - name: Install ruby
       uses: actions/setup-ruby@v1
-    - name: Install aws-sam-cli
-      run: sudo pip install aws-sam-cli
     - name: Build Docker Swift Dev Image
       run: docker build --build-arg SWIFT_VERSION=${SWIFT_VERSION} -t fabianfett/amazonlinux-swift:${SWIFT_VERSION}-amazonlinux2-dev ./docker
-    - name: Download local layer
-      run: | 
-        mkdir -p Layer
-        curl -o Layer/swift-${SWIFT_VERSION}-RELEASE.zip https://amazonlinux-swift.s3.eu-central-1.amazonaws.com/layers/swift-${SWIFT_VERSION}-RELEASE.zip
-        unzip Layer/swift-${SWIFT_VERSION}-RELEASE.zip -d Layer/swift-lambda-layer
-    - name: test local lambda
-      run: make test_lambda
-      env:
-        EXAMPLE_LAMBDA: SquareNumber
-      
+    - name: Build example
+      run: |
+        cd examples/${{ matrix.example }}
+        make package_lambda
+    - name: Install sam cli
+      if: matrix.example == 'SquareNumber'
+      run: sudo pip install aws-sam-cli
+    - name: Download layer
+      if: matrix.example == 'SquareNumber'
+      run: |
+        cd examples/${{ matrix.example }}
+        make download_layer
+    - name: Run example
+      if: matrix.example == 'SquareNumber'
+      run: |
+        cd examples/${{ matrix.example }}
+        echo '{"number": 9 }' | sam local invoke -v . "SquareNumberFunction"
+        echo '{"number": 3 }' | sam local invoke -v . "PrintNumberFunction"
+        
   "tuxOS-Tests":
     runs-on: ubuntu-latest
     strategy:

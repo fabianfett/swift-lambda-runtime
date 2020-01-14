@@ -15,7 +15,7 @@ Resources:
   EchoCallFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: Examples/URLRequestWithSession/lambda.zip
+      CodeUri: lambda.zip
       Handler: "echoCall"
       Runtime: provided
       Layers:
