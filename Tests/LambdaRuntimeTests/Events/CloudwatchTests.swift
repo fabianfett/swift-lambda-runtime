@@ -1,5 +1,6 @@
 import Foundation
 import XCTest
+@testable import LambdaEvents
 @testable import LambdaRuntime
 
 class CloudwatchTests: XCTestCase {

@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 import NIO
 @testable import LambdaRuntime
+@testable import LambdaEvents
 
 class SQSTests: XCTestCase {
 

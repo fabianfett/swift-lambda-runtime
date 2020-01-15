@@ -1,6 +1,7 @@
 import Foundation
 import XCTest
 @testable import LambdaRuntime
+@testable import LambdaEvents
 
 class DynamoDBTests: XCTestCase {
 

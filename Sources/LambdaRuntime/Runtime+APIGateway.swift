@@ -1,6 +1,6 @@
 import Foundation
 import NIO
-@_exported import LambdaEvents
+import LambdaEvents
 
 extension APIGateway {
   

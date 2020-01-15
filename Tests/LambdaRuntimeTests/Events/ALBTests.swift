@@ -1,6 +1,8 @@
 import Foundation
 import XCTest
 @testable import LambdaRuntime
+@testable import LambdaEvents
+
 
 class ALBTests: XCTestCase {
 

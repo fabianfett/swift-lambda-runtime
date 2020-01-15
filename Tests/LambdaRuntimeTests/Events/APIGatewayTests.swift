@@ -4,6 +4,7 @@ import NIO
 import NIOHTTP1
 import NIOFoundationCompat
 @testable import LambdaRuntime
+@testable import LambdaEvents
 import LambdaRuntimeTestUtils
 
 class APIGatewayTests: XCTestCase {

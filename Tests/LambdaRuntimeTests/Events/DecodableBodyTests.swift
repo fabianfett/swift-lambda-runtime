@@ -2,6 +2,7 @@ import Foundation
 import XCTest
 import Base64Kit
 @testable import LambdaRuntime
+@testable import LambdaEvents
 
 class DecodableBodyTests: XCTestCase {
 
