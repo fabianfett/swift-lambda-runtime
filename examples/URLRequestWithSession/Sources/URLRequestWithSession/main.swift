@@ -50,7 +50,7 @@ let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
 defer { try! group.syncShutdownGracefully() }
 
 do {
-  let runtime = try LambdaRuntime.createRuntime(eventLoopGroup: group, handler: echoCall)
+  let runtime = try Runtime.createRuntime(eventLoopGroup: group, handler: echoCall)
   defer { try! runtime.syncShutdown() }
   
   try runtime.start().wait()

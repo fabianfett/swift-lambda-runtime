@@ -2,7 +2,7 @@ import Foundation
 import NIO
 import NIOFoundationCompat
 
-extension LambdaRuntime {
+extension Runtime {
     
   /// wrapper to use for the register function that wraps the encoding and decoding
   public static func codable<Event: Decodable, Result: Encodable>(

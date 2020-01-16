@@ -106,28 +106,28 @@ func printOriginalPayload(_ handler: @escaping (NIO.ByteBuffer, Context) -> Even
 do {
   logger.info("start runtime")
   let environment = try Environment()
-  let handler: LambdaRuntime.Handler
+  let handler: Runtime.Handler
   
   switch environment.handlerName {
   case "sns":
-    handler = printOriginalPayload(LambdaRuntime.codable(handleSNS))
+    handler = printOriginalPayload(Runtime.codable(handleSNS))
   case "sqs":
-    handler = printOriginalPayload(LambdaRuntime.codable(handleSQS))
+    handler = printOriginalPayload(Runtime.codable(handleSQS))
   case "dynamo":
-    handler = printOriginalPayload(LambdaRuntime.codable(handleDynamoStream))
+    handler = printOriginalPayload(Runtime.codable(handleDynamoStream))
   case "schedule":
-    handler = printOriginalPayload(LambdaRuntime.codable(handleCloudwatchSchedule))
+    handler = printOriginalPayload(Runtime.codable(handleCloudwatchSchedule))
   case "api":
     handler = printOriginalPayload(APIGateway.handler(handleAPIRequest))
   case "s3":
-    handler = printOriginalPayload(LambdaRuntime.codable(handleS3))
+    handler = printOriginalPayload(Runtime.codable(handleS3))
   case "loadbalancer":
     handler = printOriginalPayload(ALB.handler(multiValueHeadersEnabled: true, handleLoadBalancerRequest))
   default:
     handler = printPayload
   }
   
-  let runtime = try LambdaRuntime.createRuntime(eventLoopGroup: group, handler: handler)
+  let runtime = try Runtime.createRuntime(eventLoopGroup: group, handler: handler)
   defer { try! runtime.syncShutdown() }
   logger.info("starting runloop")
 

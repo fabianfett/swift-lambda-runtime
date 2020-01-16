@@ -27,15 +27,15 @@ defer {
 
 do {
   
-  let handler: LambdaRuntime.Handler
+  let handler: Runtime.Handler
   switch ProcessInfo.processInfo.environment["_HANDLER"] {
   case "printNumber":
-    handler = LambdaRuntime.codable(printNumber)
+    handler = Runtime.codable(printNumber)
   default:
-    handler = LambdaRuntime.codable(squareNumber)
+    handler = Runtime.codable(squareNumber)
   }
   
-  let runtime = try LambdaRuntime.createRuntime(eventLoopGroup: group, handler: handler)
+  let runtime = try Runtime.createRuntime(eventLoopGroup: group, handler: handler)
   defer { try! runtime.syncShutdown() }
   
   try runtime.start().wait()

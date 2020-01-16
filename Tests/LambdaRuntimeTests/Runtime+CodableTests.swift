@@ -28,7 +28,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<TestResponse> in
+    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<TestResponse> in
       return ctx.eventLoop.makeSucceededFuture(TestResponse(greeting: "Hello \(req.name)!"))
     }
     
@@ -52,7 +52,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<TestResponse> in
+    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<TestResponse> in
       return ctx.eventLoop.makeSucceededFuture(TestResponse(greeting: "Hello \(req.name)!"))
     }
     
@@ -81,7 +81,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
+    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
       return ctx.eventLoop.makeSucceededFuture(Void())
     }
     
@@ -101,7 +101,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
+    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
       return ctx.eventLoop.makeSucceededFuture(Void())
     }
     
@@ -127,7 +127,7 @@ class RuntimeCodableTests: XCTestCase {
     defer {
         XCTAssertNoThrow(try eventLoopGroup.syncShutdownGracefully())
     }
-    let handler = LambdaRuntime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
+    let handler = Runtime.codable { (req: TestRequest, ctx) -> EventLoopFuture<Void> in
       return ctx.eventLoop.makeFailedFuture(RuntimeError.unknown)
     }
     
