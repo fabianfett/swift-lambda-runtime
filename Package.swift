@@ -48,6 +48,7 @@ let package = Package(
       "LambdaEvents",
       "LambdaRuntime",
       "LambdaRuntimeTestUtils",
+      "NIO",
       "NIOTestUtils",
       "Logging",
     ])

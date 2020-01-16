@@ -27,7 +27,7 @@ do {
   
   logger.info("register function")
 
-  let handler: LambdaRuntime.Handler
+  let handler: Runtime.Handler
   switch env.handlerName {
   case "list":
     handler = APIGateway.handler(controller.listTodos)
@@ -47,7 +47,7 @@ do {
   
   logger.info("starting runloop")
 
-  let runtime    = try LambdaRuntime.createRuntime(eventLoopGroup: group, environment: env, handler: handler)
+  let runtime    = try Runtime.createRuntime(eventLoopGroup: group, environment: env, handler: handler)
   defer { try! runtime.syncShutdown() }
   try runtime.start().wait()
 }

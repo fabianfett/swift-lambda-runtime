@@ -16,7 +16,7 @@ class RuntimeTests: XCTestCase {
     defer { XCTAssertNoThrow(try group.syncShutdownGracefully()) }
     
     do {
-      let runtime = try LambdaRuntime.createRuntime(eventLoopGroup: group) { (_, ctx) in
+      let runtime = try Runtime.createRuntime(eventLoopGroup: group) { (_, ctx) in
         return ctx.eventLoop.makeSucceededFuture(nil)
       }
       defer { XCTAssertNoThrow(try runtime.syncShutdown()) }
@@ -34,7 +34,7 @@ class RuntimeTests: XCTestCase {
     defer { XCTAssertNoThrow(try group.syncShutdownGracefully()) }
     
     do {
-      let runtime = try LambdaRuntime.createRuntime(eventLoopGroup: group) { (_, ctx) in
+      let runtime = try Runtime.createRuntime(eventLoopGroup: group) { (_, ctx) in
         return ctx.eventLoop.makeSucceededFuture(nil)
       }
       defer { XCTAssertNoThrow(try runtime.syncShutdown()) }

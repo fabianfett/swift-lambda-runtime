@@ -38,7 +38,7 @@ let handler = APIGateway.handler() { (request, ctx) in
   }
 }
 
-let runtime = try LambdaRuntime.createRuntime(eventLoopGroup: group, handler: handler)
+let runtime = try Runtime.createRuntime(eventLoopGroup: group, handler: handler)
 defer { try! runtime.syncShutdown() }
 try runtime.start().wait()
 ```
@@ -130,9 +130,9 @@ let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
 defer { try! group.syncShutdownGracefully() }
 
 do {
-  let runtime = try LambdaRuntime.createRuntime(
+  let runtime = try Runtime.createRuntime(
     eventLoopGroup: group, 
-    handler: LambdaRuntime.codable(squareNumber))
+    handler: Runtime.codable(squareNumber))
 
   defer { try! runtime.syncShutdown() }
   

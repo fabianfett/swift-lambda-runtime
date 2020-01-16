@@ -8,7 +8,7 @@ public struct InvocationError: Codable {
   let errorMessage: String
 }
 
-final public class LambdaRuntime {
+final public class Runtime {
   
   public typealias Handler = (NIO.ByteBuffer, Context) -> EventLoopFuture<NIO.ByteBuffer?>
   
@@ -29,14 +29,14 @@ final public class LambdaRuntime {
 
   /// the runtime shall be initialised with an EventLoopGroup, that is used throughout the lambda
   public static func createRuntime(eventLoopGroup: EventLoopGroup, environment: Environment? = nil, handler: @escaping Handler)
-    throws -> LambdaRuntime
+    throws -> Runtime
   {
     let env = try environment ?? Environment()
     
     let client  = RuntimeAPIClient(
       eventLoopGroup: eventLoopGroup,
       lambdaRuntimeAPI: env.lambdaRuntimeAPI)
-    let runtime = LambdaRuntime(
+    let runtime = Runtime(
       eventLoopGroup: eventLoopGroup,
       client: client,
       environment: env,
