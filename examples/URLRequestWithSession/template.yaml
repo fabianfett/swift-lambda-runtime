@@ -19,6 +19,7 @@ Resources:
       Handler: "echoCall"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
 
 

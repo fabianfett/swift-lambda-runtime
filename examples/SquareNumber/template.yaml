@@ -24,6 +24,7 @@ Resources:
       Handler: "squareNumber"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - !Ref SwiftLayer
 
   PrintNumberFunction:
@@ -33,6 +34,7 @@ Resources:
       Handler: "printNumber"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - !Ref SwiftLayer
 
 

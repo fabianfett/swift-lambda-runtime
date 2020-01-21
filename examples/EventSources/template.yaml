@@ -82,6 +82,7 @@ Resources:
       Handler: "schedule"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - !Ref SwiftLayer
       Events:
         schedule:
@@ -102,6 +103,7 @@ Resources:
       Handler: "sns"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - !Ref SwiftLayer
       Policies:
       - SNSCrudPolicy:
@@ -124,6 +126,7 @@ Resources:
       Handler: "sqs"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - !Ref SwiftLayer
       Policies:
       - SQSPollerPolicy:
@@ -163,6 +166,7 @@ Resources:
       Handler: "dynamo"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - !Ref SwiftLayer
       Policies:
       - SQSPollerPolicy:
@@ -190,6 +194,7 @@ Resources:
       Handler: "api"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - !Ref SwiftLayer
       Events:
         api:
@@ -212,6 +217,7 @@ Resources:
       Handler: "s3"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - !Ref SwiftLayer
       Events:
         s3:
@@ -229,6 +235,7 @@ Resources:
       Handler: "loadbalancer"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - !Ref SwiftLayer
 
   HandleLoadBalancerLambdaInvokePermission:

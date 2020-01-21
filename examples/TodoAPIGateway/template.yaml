@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: AWS::Serverless-2016-10-31
+Transform: [AWS::Serverless]
 Description: >
   sam-app
 
@@ -45,6 +45,7 @@ Resources:
       Handler: "list"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBReadPolicy:
@@ -64,6 +65,7 @@ Resources:
       Handler: "create"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBCrudPolicy:
@@ -83,6 +85,7 @@ Resources:
       Handler: "deleteAll"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBCrudPolicy:
@@ -102,6 +105,7 @@ Resources:
       Handler: "getTodo"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBReadPolicy:
@@ -121,6 +125,7 @@ Resources:
       Handler: "deleteTodo"
       Runtime: provided
       Layers:
+      - arn:aws:lambda:::awslayer:AmazonLinux2
       - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBCrudPolicy:
@@ -140,7 +145,8 @@ Resources:
       Handler: "patchTodo"
       Runtime: provided
       Layers:
-        - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
+      - arn:aws:lambda:::awslayer:AmazonLinux2
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
       Policies:
       - DynamoDBCrudPolicy:
           TableName: "SwiftLambdaTodos"
