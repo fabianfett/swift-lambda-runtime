@@ -102,7 +102,8 @@ extension S3.Event.Record: Decodable {
   private static func createDateFormatter() -> DateFormatter {
     let formatter = DateFormatter()
     formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-    formatter.timeZone = TimeZone(secondsFromGMT: 0)
+    formatter.timeZone   = TimeZone(secondsFromGMT: 0)
+    formatter.locale     = Locale(identifier: "en_US_POSIX")
     return formatter
   }
 }
