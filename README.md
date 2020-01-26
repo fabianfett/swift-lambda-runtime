@@ -4,7 +4,7 @@
 [![github-actions](https://github.com/fabianfett/swift-lambda-runtime/workflows/CI/badge.svg)](https://github.com/fabianfett/swift-lambda-runtime/actions)
 [![codecov](https://codecov.io/gh/fabianfett/swift-lambda-runtime/branch/master/graph/badge.svg)](https://codecov.io/gh/fabianfett/swift-lambda-runtime)
 
-An AWS Lambda Swift runtime on top of SwiftNIO with some ready-to-use AWS Events. It is intended to be used with the [Swift on Amazon Linux](https://fabianfett.de/amazonlinux-swift) project which ensures that Swift executables can be run on Amazon Linux. 
+An AWS Lambda Swift runtime on top of SwiftNIO with some ready-to-use AWS Events. It is intended to be used with the [Swift on Amazon Linux](https://fabianfett.de/amazonlinux-swift) project which ensures that Swift executables can be run on Amazon Linux.
 
 An APIGateway Lambda looks like this:
 
@@ -43,13 +43,7 @@ defer { try! runtime.syncShutdown() }
 try runtime.start().wait()
 ```
 
-<!---
-Learn in depth how to build Lambdas in Swift in my blog series:
-
-- [Swift on AWS Lambda](https://fabianfett.de/2019-12-16/swift-on-aws-lambda)
-- Run your Vapor App on AWS Lambda (coming soon)
-- Swift on AWS Lambda with SAM (coming soon)
---->
+If you want to run your [Vapor](/vapor/vapor) app on Lambda behind an APIGateway please checkout [`vapor-lambda-runtime`](/fabianfett/vapor-lambda-runtime), which builds on top of this package.
 
 ## Status
 
