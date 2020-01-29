@@ -43,10 +43,11 @@ defer { try! runtime.syncShutdown() }
 try runtime.start().wait()
 ```
 
-If you want to run your [Vapor](/vapor/vapor) app on Lambda behind an APIGateway please checkout [`vapor-lambda-runtime`](/fabianfett/vapor-lambda-runtime), which builds on top of this package.
+If you want to run your [Vapor](https://github.com/vapor/vapor) app on Lambda behind an APIGateway please checkout [`vapor-lambda-runtime`](https://github.com/fabianfett/vapor-lambda-runtime), which builds on top of this package.
 
 ## Status
 
+- [x] Runs natively on Amazon Linux and links against system libraries. Uses the Lambda Layer created by the [`amazonlinux-swift`](https://github.com/fabianfett/amazonlinux-swift) project.
 - [x] Built on top of `Swift-NIO`
 - [x] Integration with Swift [`Logging`](https://github.com/apple/swift-log)
 - [x] Ready-to-use [AWS Events](https://github.com/fabianfett/swift-lambda-runtime/tree/master/Sources/LambdaRuntime/Events) structs to get started as fast as possible. Currently implemented: Application Load Balancer, APIGateway, Cloudwatch Scheduled Events, DynamoDB Streams, S3, SNS and SQS Messages. More coming soon.
