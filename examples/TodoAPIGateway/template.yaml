@@ -45,7 +45,7 @@ Resources:
       Handler: "list"
       Runtime: provided
       Layers:
-      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:9
       Policies:
       - DynamoDBReadPolicy:
           TableName: "SwiftLambdaTodos"
@@ -64,7 +64,7 @@ Resources:
       Handler: "create"
       Runtime: provided
       Layers:
-      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:9
       Policies:
       - DynamoDBCrudPolicy:
           TableName: "SwiftLambdaTodos"
@@ -83,7 +83,7 @@ Resources:
       Handler: "deleteAll"
       Runtime: provided
       Layers:
-      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:9
       Policies:
       - DynamoDBCrudPolicy:
           TableName: "SwiftLambdaTodos"
@@ -102,7 +102,7 @@ Resources:
       Handler: "getTodo"
       Runtime: provided
       Layers:
-      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:9
       Policies:
       - DynamoDBReadPolicy:
           TableName: "SwiftLambdaTodos"
@@ -121,7 +121,7 @@ Resources:
       Handler: "deleteTodo"
       Runtime: provided
       Layers:
-      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
+      - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:9
       Policies:
       - DynamoDBCrudPolicy:
           TableName: "SwiftLambdaTodos"
@@ -140,7 +140,7 @@ Resources:
       Handler: "patchTodo"
       Runtime: provided
       Layers:
-        - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:8
+        - arn:aws:lambda:eu-central-1:426836788079:layer:Swift:9
       Policies:
       - DynamoDBCrudPolicy:
           TableName: "SwiftLambdaTodos"
