@@ -27,7 +27,7 @@ class RuntimeAPIClientTests: XCTestCase {
     XCTAssertNoThrow(try XCTAssertEqual(
       web.readInbound(),
       HTTPServerRequestPart.head(.init(version: .init(major: 1, minor: 1), method: .GET, uri: "/2018-06-01/runtime/invocation/next", headers:
-        HTTPHeaders([("Host", "localhost"), ("Connection", "close"), ("Content-Length", "0")])))))
+        HTTPHeaders([("Host", "localhost"), ("Content-Length", "0")])))))
     XCTAssertNoThrow(try XCTAssertEqual(
       web.readInbound(),
       HTTPServerRequestPart.end(nil)))
@@ -76,7 +76,7 @@ class RuntimeAPIClientTests: XCTestCase {
         web.readInbound(),
         HTTPServerRequestPart.head(.init(version: .init(major: 1, minor: 1), method: .POST,
           uri: "/2018-06-01/runtime/invocation/\(invocationId)/response",
-          headers: HTTPHeaders([("Host", "localhost"), ("Connection", "close"), ("Content-Length", "\(body.readableBytes)")])))))
+          headers: HTTPHeaders([("Host", "localhost"), ("Content-Length", "\(body.readableBytes)")])))))
       XCTAssertNoThrow(try XCTAssertEqual(
         web.readInbound(),
         HTTPServerRequestPart.body(body)))
@@ -122,7 +122,7 @@ class RuntimeAPIClientTests: XCTestCase {
         web.readInbound(),
         HTTPServerRequestPart.head(.init(version: .init(major: 1, minor: 1), method: .POST,
           uri: "/2018-06-01/runtime/invocation/\(invocationId)/error",
-          headers: HTTPHeaders([("Host", "localhost"), ("Connection", "close"), ("Content-Length", "\(body.readableBytes)")])))))
+          headers: HTTPHeaders([("Host", "localhost"), ("Content-Length", "\(body.readableBytes)")])))))
       XCTAssertNoThrow(try XCTAssertEqual(
         web.readInbound(),
         HTTPServerRequestPart.body(body)))

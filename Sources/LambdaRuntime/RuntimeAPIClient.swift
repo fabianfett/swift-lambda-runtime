@@ -68,7 +68,7 @@ final class RuntimeAPIClient {
   
   init(eventLoopGroup: EventLoopGroup, lambdaRuntimeAPI: String) {
     
-    self.httpClient = HTTPClient(eventLoopGroupProvider: .shared(eventLoopGroup))
+    self.httpClient = HTTPClient(eventLoopGroupProvider: .shared(eventLoopGroup), configuration: .init(maximumAllowedIdleTimeInConnectionPool: .hours(1)))
     self.lambdaRuntimeAPI = lambdaRuntimeAPI
     
   }
