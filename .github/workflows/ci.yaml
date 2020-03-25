@@ -18,7 +18,7 @@ jobs:
         - TodoAPIGateway
         - URLRequestWithSession
     env:
-      SWIFT_VERSION: 5.1.4
+      SWIFT_VERSION: 5.2
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        tag: ['5.1']
+        tag: ['5.1', '5.2']
     container:
       image: swift:${{ matrix.tag }}
       volumes:
@@ -83,7 +83,7 @@ jobs:
     - name: Show all Xcode versions
       run: ls -an /Applications/ | grep Xcode*
     - name: Change Xcode command line tools
-      run: sudo xcode-select -s /Applications/Xcode_11.2.app/Contents/Developer
+      run: sudo xcode-select -s /Applications/Xcode_11.4.app/Contents/Developer
     - name: SPM Build
       run: swift build
     - name: SPM Tests
