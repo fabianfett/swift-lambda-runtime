@@ -4,7 +4,7 @@ Parameters:
   SwiftLayer:
     Type: String
     Description: The arn of the swift layer.
-    Default: arn:aws:lambda:eu-central-1:426836788079:layer:Swift:9
+    Default: arn:aws:lambda:eu-central-1:426836788079:layer:Swift:11
   
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
