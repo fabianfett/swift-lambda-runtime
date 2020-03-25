@@ -12,7 +12,7 @@ let package = Package(
   dependencies: [
     .package(url: "https://github.com/apple/swift-nio.git", .upToNextMajor(from: "2.9.0")),
     .package(url: "https://github.com/apple/swift-log.git", .upToNextMajor(from: "1.1.1")),
-    .package(url: "https://github.com/swift-aws/aws-sdk-swift.git", .upToNextMajor(from: "4.0.0")),
+    .package(url: "https://github.com/swift-aws/aws-sdk-swift.git", .upToNextMajor(from: "4.4.0")),
     .package(path: "../../"),
   ],
   targets: [
