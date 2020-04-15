@@ -1,6 +1,6 @@
 # swift-lambda-runtime
 
-[![Swift 5.1](https://img.shields.io/badge/Swift-5.1-blue.svg)](https://swift.org/download/)
+[![Swift 5.2](https://img.shields.io/badge/Swift-5.2-blue.svg)](https://swift.org/download/)
 [![github-actions](https://github.com/fabianfett/swift-lambda-runtime/workflows/CI/badge.svg)](https://github.com/fabianfett/swift-lambda-runtime/actions)
 [![codecov](https://codecov.io/gh/fabianfett/swift-lambda-runtime/branch/master/graph/badge.svg)](https://codecov.io/gh/fabianfett/swift-lambda-runtime)
 
@@ -65,7 +65,7 @@ This should help you to get started with Swift on AWS Lambda. The focus is prima
 
 *Note: The following instructions were recorded on 19.12.2019 and the GUI may have changed since then. Feel free to start an issue if you see a different one.*
 
-The Swift version used here is `5.1.3`. You can look up available versions of Swift on Amazonlinux [here](https://fabianfett.de/amazonlinux-swift). You may want to use a later version if that works for you!
+The Swift version used here is `5.2.1`. You can look up available versions of Swift on Amazonlinux [here](https://fabianfett.de/amazonlinux-swift). You may want to use a later version if that works for you!
 
 ### Step 1: Develop your lambda
 
@@ -82,7 +82,7 @@ The easiest way to go forward from here is to drag the newly created `Package.sw
 Next, we will need to include the `LambdaRuntime` and `SwiftNIO` as dependencies. For that open the `Package.swift` and modify it so that it looks like this:
 
 ```swift
-// swift-tools-version:5.1
+// swift-tools-version:5.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -96,7 +96,10 @@ let package = Package(
   targets: [
     .target(
       name: "SquareNumber",
-      dependencies: ["LambdaRuntime", "NIO"]
+      dependencies: [
+        .product(name: "LambdaRuntime", package: "swift-lambda-runtime"),
+        .product(name: "NIO", package: "swift-nio"),
+      ]
     ),
   ]
 )
@@ -158,14 +161,14 @@ RUN yum -y update && \
 To create your Docker image run:
 
 ```bash
-docker build --build-arg SWIFT_VERSION=5.1.3 -t lambda-swift-dev:5.1.3 .
+docker build --build-arg SWIFT_VERSION=5.2.1 -t lambda-swift-dev:5.2.1 .
 ```
 
 Now we can compile our lambda with the new image.
 
 ```bash
 # build your lambda in the linux environment 
-$ docker run --rm --volume "$(pwd)/:/src" --workdir "/src/" lambda-swift-dev:5.1.3 swift build -c release
+$ docker run --rm --volume "$(pwd)/:/src" --workdir "/src/" lambda-swift-dev:5.2.1 swift build -c release
 ```
 
 This will create a `SquareNumber` executable in your `./build/release` folder. Let's grab the executable and rename it to `bootstrap`.
@@ -190,7 +193,7 @@ You'll see a screen that looks like this.
 
 ![Create your function](docs/Function-Create.png)
 
-First we need to select our Swift runtime. We do so by clicking "Layers" below the function name in the center of the screen. The lower part of the screen changes and we can see an "Add Layer" button in the center. Let's click that button. On the next screen we need to select "Provide a layer version ARN" and there we enter the ARN that fits the Swift version that we've used to compile. For Swift `5.1.3` this is `arn:aws:lambda:<region>:426836788079:layer:Swift:8`. Do not forget to replace `<region>` with the AWS region identifier you operate in. Next we click "Add".
+First we need to select our Swift runtime. We do so by clicking "Layers" below the function name in the center of the screen. The lower part of the screen changes and we can see an "Add Layer" button in the center. Let's click that button. On the next screen we need to select "Provide a layer version ARN" and there we enter the ARN that fits the Swift version that we've used to compile. For Swift `5.2.1` this is `arn:aws:lambda:<region>:426836788079:layer:Swift:12`. Do not forget to replace `<region>` with the AWS region identifier you operate in. Next we click "Add".
 
 ![Add the Swift layer to your Function](docs/Add-Layer-to-Function.png)
 
