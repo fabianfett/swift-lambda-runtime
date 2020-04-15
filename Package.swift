@@ -33,7 +33,7 @@ let package = Package(
       .product(name: "Base64Kit", package: "swift-base64-kit")
     ]),
     .target(name: "LambdaRuntime", dependencies: [
-      "LambdaEvents",
+      .byName(name: "LambdaEvents"),
       .product(name: "AsyncHTTPClient", package: "async-http-client"),
       .product(name: "NIO", package: "swift-nio"),
       .product(name: "NIOHTTP1", package: "swift-nio"),
@@ -41,13 +41,13 @@ let package = Package(
       .product(name: "Logging", package: "swift-log"),
     ]),
     .target(name: "LambdaRuntimeTestUtils", dependencies: [
+      .byName(name: "LambdaRuntime"),
       .product(name: "NIOHTTP1", package: "swift-nio"),
-      "LambdaRuntime"
     ]),
     .testTarget(name: "LambdaRuntimeTests", dependencies: [
-      "LambdaEvents",
-      "LambdaRuntime",
-      "LambdaRuntimeTestUtils",
+      .byName(name: "LambdaEvents"),
+      .byName(name: "LambdaRuntime"),
+      .byName(name: "LambdaRuntimeTestUtils"),
       .product(name: "NIO", package: "swift-nio"),
       .product(name: "NIOTestUtils", package: "swift-nio"),
       .product(name: "Logging", package: "swift-log"),
