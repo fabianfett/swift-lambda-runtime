@@ -3,7 +3,7 @@ LAMBDA_NAME=SquareNumber
 EXECUTABLE=$(LAMBDA_NAME)
 LAMBDA_ZIP=lambda.zip
 
-SWIFT_VERSION=5.1.4
+SWIFT_VERSION=5.2.1
 SWIFT_DOCKER_IMAGE=fabianfett/amazonlinux-swift:${SWIFT_VERSION}-amazonlinux2-dev
 
 clean_lambda:
