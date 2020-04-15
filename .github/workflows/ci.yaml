@@ -57,7 +57,7 @@ jobs:
     container:
       image: ${{ matrix.images }}
       volumes:
-      - $GITHUB_WORKSPACE:/src
+      - /workspace:/src
       options: --workdir /src
     steps:
     - name: Checkout
