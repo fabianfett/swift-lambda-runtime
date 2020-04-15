@@ -18,7 +18,7 @@ jobs:
         - TodoAPIGateway
         - URLRequestWithSession
     env:
-      SWIFT_VERSION: 5.2
+      SWIFT_VERSION: 5.2.1
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -52,12 +52,12 @@ jobs:
     strategy:
       matrix:
         images:
-        - swift:5.1
-        - swift:5.2
+        - swift:5.1.5
+        - swift:5.2.1
     container:
       image: ${{ matrix.images }}
       volumes:
-      - $GITHUB_WORKSPACE:/src
+      - /workspace:/src
       options: --workdir /src
     steps:
     - name: Checkout
