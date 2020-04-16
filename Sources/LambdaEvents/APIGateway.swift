@@ -12,6 +12,16 @@ public struct APIGateway {
   public struct Request: DecodableBody {
     
     public struct Context: Codable {
+
+      public struct Authorizer: Codable {
+
+        public struct Claims: Codable {
+          public let sub: String?
+          public let email: String?
+        }
+
+        public let claims: Claims?
+      }
       
       public struct Identity: Codable {
         public let cognitoIdentityPoolId: String?
@@ -37,6 +47,7 @@ public struct APIGateway {
       public let stage: String
       
       public let identity: Identity
+      public let authorizer: Authorizer?
       public let extendedRequestId: String?
       public let path: String
     }
