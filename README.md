@@ -51,8 +51,8 @@ If you want to run your [Vapor](https://github.com/vapor/vapor) app on Lambda be
 - [x] Built on top of `Swift-NIO`
 - [x] Integration with Swift [`Logging`](https://github.com/apple/swift-log)
 - [x] Ready-to-use [AWS Events](https://github.com/fabianfett/swift-lambda-runtime/tree/master/Sources/LambdaRuntime/Events) structs to get started as fast as possible. Currently implemented: Application Load Balancer, APIGateway, Cloudwatch Scheduled Events, DynamoDB Streams, S3, SNS and SQS Messages. More coming soon.
-- [x] [Tested integration](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/TodoAPIGateway/Sources/TodoAPIGateway/main.swift) with [`aws-swift-sdk`](https://github.com/swift-aws/aws-sdk-swift)
-- [x] [Two examples](https://github.com/fabianfett/swift-lambda-runtime/tree/master/Examples) to get you up and running as fast as possible (including an [API-Gateway Todo-List](http://todobackend.com/client/index.html?https://mwpixnkbzj.execute-api.eu-central-1.amazonaws.com/test/todos))
+- [x] [Tested integration](https://github.com/fabianfett/swift-lambda-runtime/blob/master/examples/TodoAPIGateway/Sources/TodoAPIGateway/main.swift) with [`aws-swift-sdk`](https://github.com/swift-aws/aws-sdk-swift)
+- [x] [Two examples](https://github.com/fabianfett/swift-lambda-runtime/tree/master/examples) to get you up and running as fast as possible (including an [API-Gateway Todo-List](http://todobackend.com/client/index.html?https://mwpixnkbzj.execute-api.eu-central-1.amazonaws.com/test/todos))
 - [x] Unit and end-to-end tests
 - [x] CI workflow with GitHub Actions
 
@@ -61,7 +61,7 @@ Alternatives: There is another project to run Swift within AWS-Lambda: [Swift-Sp
 
 ## Create and run your first Swift Lambda
 
-This should help you to get started with Swift on AWS Lambda. The focus is primarily on the AWS console, since it is the easiest way to begin with. Of course you can use the [aws-cli](https://aws.amazon.com/cli/), [sam-cli](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-layers.html), the [serverless-framework](https://serverless.com/framework/docs/providers/aws/guide/layers/), [cloudformation](https://aws.amazon.com/cloudformation/) or whatever tooling you prefer at every step of your way. I even encourage you to do so in a production environment. Noone likes clicky architectures. 🤯 If you are looking for an example, check out the [sam-template](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/TodoAPIGateway/template.yaml) in the [TodoBackend](https://github.com/fabianfett/swift-lambda-runtime/tree/master/Examples/TodoAPIGateway) example.
+This should help you to get started with Swift on AWS Lambda. The focus is primarily on the AWS console, since it is the easiest way to begin with. Of course you can use the [aws-cli](https://aws.amazon.com/cli/), [sam-cli](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-layers.html), the [serverless-framework](https://serverless.com/framework/docs/providers/aws/guide/layers/), [cloudformation](https://aws.amazon.com/cloudformation/) or whatever tooling you prefer at every step of your way. I even encourage you to do so in a production environment. Noone likes clicky architectures. 🤯 If you are looking for an example, check out the [sam-template](https://github.com/fabianfett/swift-lambda-runtime/blob/master/examples/TodoAPIGateway/template.yaml) in the [TodoBackend](https://github.com/fabianfett/swift-lambda-runtime/tree/master/examples/TodoAPIGateway) example.
 
 *Note: The following instructions were recorded on 19.12.2019 and the GUI may have changed since then. Feel free to start an issue if you see a different one.*
 
@@ -90,8 +90,8 @@ import PackageDescription
 let package = Package(
   name: "SquareNumber",
   dependencies: [
-    .package(url: "https://github.com/fabianfett/swift-lambda-runtime.git", .upToNextMajor(from: "0.2.0")),
-    .package(url: "https://github.com/apple/swift-nio", .upToNextMajor(from: "2.0.0")),
+    .package(url: "https://github.com/fabianfett/swift-lambda-runtime.git", .upToNextMajor(from: "0.6.0")),
+    .package(url: "https://github.com/apple/swift-nio", .upToNextMajor(from: "2.13.0")),
   ],
   targets: [
     .target(
@@ -148,7 +148,7 @@ Your lambda needs to be built for the Amazon Linux environment. For that we use 
 For this we will first need to build a development Docker image in order to compile your code on Linux. Create a Docker file and include the following code:
 
 ```Dockerfile
-ARG SWIFT_VERSION=5.0
+ARG SWIFT_VERSION=5.2.1
 FROM fabianfett/amazonlinux-swift:$SWIFT_VERSION-amazonlinux2
 
 # needed to do again after FROM due to docker limitation
@@ -221,22 +221,22 @@ Great! You've made it so far. In my point of view, you should now familiarize yo
 
 ### Lambda deployment/testing tooling
 
-It may be serverless or aws-sam, as noone wants or should build Lambda services by just clicking around in the AWS Console. The TodoList example is [setup with aws-sam](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/TodoAPIGateway/template.yaml). If you need more help about how to get started with aws-sam, please reach out by opening a GitHub issue.
+It may be serverless or aws-sam, as noone wants or should build Lambda services by just clicking around in the AWS Console. The TodoList example is [setup with aws-sam](https://github.com/fabianfett/swift-lambda-runtime/blob/master/examples/TodoAPIGateway/template.yaml). If you need more help about how to get started with aws-sam, please reach out by opening a GitHub issue.
 
 ### aws-sdk
 
 There are two projects providing you an API to interact with AWS resources.
 
-- [`aws-sdk-swift`](https://github.com/swift-aws/aws-sdk-swift) A community driven effort. The [TodoList example](https://github.com/fabianfett/swift-lambda-runtime/tree/master/Examples/TodoAPIGateway) uses this sdk to [query DynamoDB](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/TodoAPIGateway/Sources/TodoService/DynamoTodoStore.swift).
+- [`aws-sdk-swift`](https://github.com/swift-aws/aws-sdk-swift) A community driven effort. The [TodoList example](https://github.com/fabianfett/swift-lambda-runtime/tree/master/examples/TodoAPIGateway) uses this sdk to [query DynamoDB](https://github.com/fabianfett/swift-lambda-runtime/blob/master/examples/TodoAPIGateway/Sources/TodoService/DynamoTodoStore.swift).
 - [`smoke-aws`](https://github.com/amzn/smoke-aws) An Amazon (not AWS 😉) driven effort. Please be aware that this sdk does not return `EventLoopFuture`s. Therefore integrating may be a little tricky. Not tested.
 
 ### Logging 
 
-If you want to log something inside your lambda you can use the [`logger` property](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Sources/LambdaRuntime/Context.swift#L15) on the `Context` class. The `logger` is based on [`swift-log`](https://github.com/apple/swift-log) and should for this reason be compatible with lot's of other server-side Swift projects. By default the [RequestId is exposed](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Sources/LambdaRuntime/Context.swift#L21) as metadata. An example can be found [here](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/URLRequestWithSession/Sources/URLRequestWithSession/main.swift).
+If you want to log something inside your lambda you can use the [`logger` property](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Sources/LambdaRuntime/Context.swift#L15) on the `Context` class. The `logger` is based on [`swift-log`](https://github.com/apple/swift-log) and should for this reason be compatible with lot's of other server-side Swift projects. By default the [RequestId is exposed](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Sources/LambdaRuntime/Context.swift#L21) as metadata. An example can be found [here](https://github.com/fabianfett/swift-lambda-runtime/blob/master/examples/URLRequestWithSession/Sources/URLRequestWithSession/main.swift).
 
 ### EventLoop
 
-The EventLoop, on which your function is executed, can be accessed via the [`eventLoop` property](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Sources/LambdaRuntime/Context.swift#L16) on the `Context` class. An example can be found [here](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Examples/URLRequestWithSession/Sources/URLRequestWithSession/main.swift).
+The EventLoop, on which your function is executed, can be accessed via the [`eventLoop` property](https://github.com/fabianfett/swift-lambda-runtime/blob/master/Sources/LambdaRuntime/Context.swift#L16) on the `Context` class. An example can be found [here](https://github.com/fabianfett/swift-lambda-runtime/blob/master/examples/URLRequestWithSession/Sources/URLRequestWithSession/main.swift).
 
 ## Contributing
 
