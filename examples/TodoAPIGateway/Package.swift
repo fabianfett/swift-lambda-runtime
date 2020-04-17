@@ -10,7 +10,7 @@ let package = Package(
     .library(name: "TodoService", targets: ["TodoService"])
   ],
   dependencies: [
-    .package(url: "https://github.com/apple/swift-nio.git", .upToNextMajor(from: "2.9.0")),
+    .package(url: "https://github.com/apple/swift-nio.git", .upToNextMajor(from: "2.16.0")),
     .package(url: "https://github.com/apple/swift-log.git", .upToNextMajor(from: "1.1.1")),
     .package(url: "https://github.com/swift-aws/aws-sdk-swift.git", .upToNextMajor(from: "4.4.0")),
     .package(path: "../../"),
@@ -18,7 +18,10 @@ let package = Package(
   targets: [
     .target(
       name: "TodoAPIGateway",
-      dependencies: ["LambdaRuntime", "Logging", "TodoService", "NIO", "NIOHTTP1", "DynamoDB"]),
+      dependencies: [
+        "LambdaRuntime", "Logging", "TodoService", "NIO", "NIOHTTP1", "DynamoDB"
+      ]
+    ),
     .testTarget(
       name: "TodoAPIGatewayTests",
       dependencies: ["TodoAPIGateway"]),
