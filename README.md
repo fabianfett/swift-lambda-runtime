@@ -1,5 +1,7 @@
 # swift-lambda-runtime
 
+⚠️ This project is unmaintained legacy code, that never reached a version 1.0. It has been obsoleted by the [`swift-server/swift-aws-lambda-runtime`](https://github.com/swift-server/swift-aws-lambda-runtime) which contains a faster, more optimized AWS Lambda Runtime with a better API that should satisfy more needs.
+
 [![Swift 5.2](https://img.shields.io/badge/Swift-5.2-blue.svg)](https://swift.org/download/)
 [![github-actions](https://github.com/fabianfett/swift-lambda-runtime/workflows/CI/badge.svg)](https://github.com/fabianfett/swift-lambda-runtime/actions)
 [![codecov](https://codecov.io/gh/fabianfett/swift-lambda-runtime/branch/master/graph/badge.svg)](https://codecov.io/gh/fabianfett/swift-lambda-runtime)
